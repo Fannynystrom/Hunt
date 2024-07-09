@@ -7,7 +7,7 @@ const InviteScreen = ({ route, navigation }) => {
   const inviteUser = () => {
     //implementera logik för att bjuda in vänner
     console.log(`Invite user with ID: ${userId} to Hunt`);
-    // navigerar tillbaka efter inbjudan
+    // navigera tillbaka efter inbjudan
     navigation.goBack();
   };
 

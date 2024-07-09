@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Button, StyleSheet } from 'react-native';
 
 const FriendsScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
@@ -14,6 +14,12 @@ const FriendsScreen = ({ navigation }) => {
     ]);
   }, []);
 
+  const inviteUser = (userId) => {
+    // här kommer kod för att bjuda in vänner till en huuuunt
+    console.log(`Invite user with ID: ${userId} to Hunt`);
+    // här kommer kod för inbjudan till backend
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Friends</Text>
@@ -21,13 +27,13 @@ const FriendsScreen = ({ navigation }) => {
         data={users}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => navigation.navigate('Invite', { userId: item.id })}
-          >
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.email}>{item.email}</Text>
-          </TouchableOpacity>
+          <View style={styles.item}>
+            <View style={styles.userInfo}>
+              <Text style={styles.name}>{item.name}</Text>
+              <Text style={styles.email}>{item.email}</Text>
+            </View>
+            <Button title="Invite" onPress={() => inviteUser(item.id)} />
+          </View>
         )}
       />
     </View>
@@ -45,9 +51,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+  },
+  userInfo: {
+    flexDirection: 'column',
   },
   name: {
     fontSize: 18,
