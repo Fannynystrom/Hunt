@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import styles from './ProfileScreenStyles';
+import Avatar from '../components/Avatar';
+
 
 
 const ProfileScreen = () => {
