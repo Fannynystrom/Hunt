@@ -2,8 +2,7 @@
 
 # dependencies
 node_modules/
-firebaseConfig.js
-
+.env
 # Expo
 .expo/
 dist/
