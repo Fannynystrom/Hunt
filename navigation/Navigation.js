@@ -1,39 +1,41 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Icon from 'react-native-vector-icons/Ionicons'; 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
+import LoginScreen from '../screens/LoginScreen';
+import SignupScreen from '../screens/SignupScreen';
 import HomeScreen from '../screens/HomeScreen';
 import HuntScreen from '../screens/HuntScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import FriendsScreen from '../screens/FriendsScreen'; // Importera FriendsScreen
-import InviteScreen from '../screens/InviteScreen'; // Importera InviteScreen
-
+import FriendsScreen from '../screens/FriendsScreen';
+import InviteScreen from '../screens/InviteScreen';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 
+function MainTabs() {
+  return (
+    <Tab.Navigator initialRouteName="Home">
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Hunt" component={HuntScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Friends" component={FriendsScreen} />
+    </Tab.Navigator>
+  );
+}
+
 function AppNavigator() {
-    return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Main">
-          <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-          <Stack.Screen name="Invite" component={InviteScreen} options={{ title: 'Invite' }} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
-  }
-  
-  function MainTabs() {
-    return (
-      <Tab.Navigator initialRouteName="Home">
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Hunt" component={HuntScreen} />
-        <Tab.Screen name="Profile" component={ProfileScreen} />
-        <Tab.Screen name="Friends" component={FriendsScreen} />
-      </Tab.Navigator>
-    );
-  }
-  
-  export default AppNavigator;
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Signup" component={SignupScreen} options={{ title: 'Sign Up' }} />
+        <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
+        <Stack.Screen name="Invite" component={InviteScreen} options={{ title: 'Invite' }} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default AppNavigator;
