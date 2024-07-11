@@ -3,13 +3,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
-import LoginScreen from '../screens/LoginScreen';
-import SignupScreen from '../screens/SignupScreen';
-import HomeScreen from '../screens/HomeScreen';
-import HuntScreen from '../screens/HuntScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import FriendsScreen from '../screens/FriendsScreen';
-import InviteScreen from '../screens/InviteScreen';
+import LoginScreen from '../screens/Login/LoginScreen';
+import SignupScreen from '../screens/Signup/SignupScreen';
+import HomeScreen from '../screens/Home/HomeScreen';
+import HuntScreen from '../screens/Hunt/HuntScreen';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
+import FriendsScreen from '../screens/Friends/FriendsScreen';
+import InviteScreen from '../screens/Invite/InviteScreen';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
