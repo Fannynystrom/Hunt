@@ -1,57 +1,40 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
 
-const SignupScreen = ({ navigation }) => {
+const SignUp = () => {
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignup = () => {
-    // här kommer logiken 
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('User created:', userCredential.user);
+    } catch (error) {
+      console.error('Error signing up:', error);
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <Text>Sign Up</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
+    <form onSubmit={handleSignup}>
+      <input
+        type="email"
         value={email}
-        onChangeText={setEmail}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+        required
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Name"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
+      <input
+        type="password"
         value={password}
-        onChangeText={setPassword}
-        secureTextEntry
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        required
       />
-      <Button title="Sign Up" onPress={handleSignup} />
-      <Text onPress={() => navigation.navigate('Login')}>Back to Login</Text>
-    </View>
+      <button type="submit">Sign Up</button>
+    </form>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  input: {
-    width: 200,
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingLeft: 10,
-  },
-});
-
-export default SignupScreen;
+export default SignUp;
