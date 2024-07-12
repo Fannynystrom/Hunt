@@ -1,29 +1,36 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebaseConfig';
+import { auth, db } from '../../firebaseConfig';
+import { collection, doc, setDoc } from 'firebase/firestore';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
 
   const handleSignup = async (e) => {
-    //gör att sidan inte laddas om
     e.preventDefault();
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log('User created:', userCredential.user);
+      const user = userCredential.user;
+
+      // Spara användarnamnet i Firestore
+      await setDoc(doc(collection(db, 'users'), user.uid), {
+        username: username,
+        email: email,
+      });
+
+      console.log('User created and username saved:', user.uid);
     } catch (error) {
       console.error('Error signing up:', error);
     }
   };
 
   return (
-    //onSubmit kallar på handleSignup funktionen när ngn klickar på signUp knappen
     <form onSubmit={handleSignup}>
       <input
         type="email"
         value={email}
-        //OnChange skickar infon dvs email och password till firebase
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
         required
@@ -33,6 +40,13 @@ const SignUp = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
+        required
+      />
+      <input
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Username"
         required
       />
       <button type="submit">Sign Up</button>
