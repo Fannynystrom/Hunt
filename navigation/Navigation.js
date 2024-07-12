@@ -5,7 +5,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 
 import LoginScreen from '../screens/Login/LoginScreen';
 import SignupScreen from '../screens/Signup/SignupScreen';
-import HomeScreen from '../screens/Home/HomeScreen';
+//import HomeScreen from '../screens/Home/HomeScreen';
 import HuntScreen from '../screens/Hunt/HuntScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import FriendsScreen from '../screens/Friends/FriendsScreen';
@@ -16,14 +16,14 @@ const Stack = createStackNavigator();
 
 function MainTabs() {
   return (
-    <Tab.Navigator initialRouteName="Home">
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Hunt" component={HuntScreen} />
+    <Tab.Navigator initialRouteName="Profile">
       <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Hunt" component={HuntScreen} />
       <Tab.Screen name="Friends" component={FriendsScreen} />
     </Tab.Navigator>
   );
 }
+
 
 function AppNavigator() {
   return (
