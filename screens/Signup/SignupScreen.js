@@ -3,6 +3,8 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import { auth, db } from '../../firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
+import styles from '../Signup/SignupScreenStyles'; 
+import { View, TextInput, Button, Text, TouchableOpacity } from 'react-native';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -32,30 +34,34 @@ const SignUp = () => {
   };
 
   return (
-    <form onSubmit={handleSignup}>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
         placeholder="Email"
-        required
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
       />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+      <TextInput
+        style={styles.input}
         placeholder="Password"
-        required
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
       />
-      <input
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
+      <TextInput
+        style={styles.input}
         placeholder="Username"
-        required
+        value={username}
+        onChangeText={setUsername}
       />
-      <button type="submit">Sign Up</button>
-    </form>
+      <TouchableOpacity style={styles.button} onPress={handleSignup}>
+        <Text style={styles.buttonText}>Sign Up</Text>
+      </TouchableOpacity>
+      <Text style={styles.link} onPress={() => navigation.navigate('Login')}>
+        Already have an account? Log in
+      </Text>
+    </View>
   );
 };
 
