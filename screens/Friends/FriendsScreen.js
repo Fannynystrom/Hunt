@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SectionList, TextInput, Pressable, StyleSheet } from 'react-native';
+import { View, Text, SectionList, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { db } from '../../firebaseConfig';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
 
-const FriendsScreen = ({ navigation }) => {
+const InviteScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -46,9 +46,15 @@ const FriendsScreen = ({ navigation }) => {
 
   const handleInvite = async () => {
     try {
-      console.log(`Inviting users: ${selectedUsers}`);
-      // Lägg till logik för att bjuda in användare här
-      alert(`Invited users: ${selectedUsers.join(', ')}`);
+      for (let userId of selectedUsers) {
+        await addDoc(collection(db, 'invitations'), {
+          userId,
+          status: 'pending'
+        });
+        console.log('Invitation sent to user:', userId); // Logg för att se att inbjudan skickas
+      }
+      alert('Invitations sent successfully!');
+      setSelectedUsers([]);
     } catch (error) {
       console.error('Error inviting users:', error);
       alert('Failed to invite users. Please try again.');
@@ -85,7 +91,7 @@ const FriendsScreen = ({ navigation }) => {
   })).filter(group => group.data.length > 0);
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.header}>Invite Friends</Text>
       <TextInput
         style={styles.searchInput}
@@ -112,7 +118,7 @@ const FriendsScreen = ({ navigation }) => {
       <Pressable style={styles.inviteButton} onPress={handleInvite}>
         <Text style={styles.inviteButtonText}>INVITE</Text>
       </Pressable>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -206,4 +212,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FriendsScreen;
+export default InviteScreen;

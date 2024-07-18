@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, SectionList, Pressable, StyleSheet } from 'react-native';
-import { db } from '../../firebaseConfig';
-import { collection, getDocs } from 'firebase/firestore';
+import { View, Text, SectionList, TextInput, Pressable, StyleSheet } from 'react-native';
+import { db, auth } from '../../firebaseConfig';
+import { collection, getDocs, doc, getDoc, addDoc } from 'firebase/firestore';
 
-const InviteScreen = ({ route, navigation }) => {
+const InviteScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -46,8 +46,32 @@ const InviteScreen = ({ route, navigation }) => {
 
   const handleInvite = async () => {
     try {
-      console.log(`Inviting users: ${selectedUsers}`);
-      navigation.goBack();
+      const user = auth.currentUser;
+      if (!user) {
+        console.error('No user is logged in');
+        return;
+      }
+
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userData = userDoc.data();
+      const senderUsername = userData?.username;
+
+      if (!senderUsername) {
+        console.error('Sender username not found');
+        return;
+      }
+
+      console.log('Inviting users with senderUsername:', senderUsername);
+
+      for (let userId of selectedUsers) {
+        await addDoc(collection(db, 'invitations'), {
+          userId,
+          status: 'pending',
+          senderUsername: senderUsername // Spara avsändarens användarnamn
+        });
+      }
+      alert('Invitations sent successfully!');
+      setSelectedUsers([]);
     } catch (error) {
       console.error('Error inviting users:', error);
       alert('Failed to invite users. Please try again.');
@@ -61,7 +85,7 @@ const InviteScreen = ({ route, navigation }) => {
         style={[styles.userItem, isSelected && styles.selectedUserItem]}
         onPress={() => handleSelectUser(item.id)}
       >
-        <View style={styles.userAvatar}>
+        <View style={[styles.userAvatar, isSelected && styles.selectedUserAvatar]}>
           <Text style={styles.userInitial}>{item.username[0]}</Text>
         </View>
         <Text style={styles.username}>{item.username}</Text>
@@ -114,6 +138,7 @@ const InviteScreen = ({ route, navigation }) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -138,7 +163,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   userItem: {
-    flexDirection: 'column',
+    flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
     borderBottomWidth: 1,
@@ -148,16 +173,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0f7fa',
   },
   userAvatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#ccc',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#007BFF',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 5,
+    marginRight: 10,
   },
   selectedUserAvatar: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#e0f7fa',
   },
   userInitial: {
     color: '#fff',
@@ -167,6 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   checkmark: {
+    marginLeft: 'auto',
     color: 'green',
     fontSize: 18,
   },
