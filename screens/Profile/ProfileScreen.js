@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useUser } from '../../context/UserContext';
 import * as ImagePicker from 'react-native-image-picker';
 import { doc, setDoc } from 'firebase/firestore';
@@ -11,59 +11,39 @@ const ProfileScreen = () => {
 
   useEffect(() => {
     if (user) {
-      //setImageUri(user.photoURL); kommer logiken va sen när man väljer bilder
+      console.log("User is logged in:", user);
+      console.log("Fetched user profile with username:", username);
     }
-  }, [user]);
+  }, [user, username]);
 
   const handleChoosePhoto = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert("Permission to access camera roll is required!");
-      return;
-    }
-
-    let pickerResult = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!pickerResult.cancelled) {
-      setImageUri(pickerResult.uri);
-      saveImageUriToFirestore(pickerResult.uri);
-    }
+    // Kommentera bort all kod här för att se om det påverkar återrenderingen
   };
 
   const saveImageUriToFirestore = async (uri) => {
-    try {
-      const docRef = doc(db, 'users', user.uid);
-      await setDoc(docRef, { imageUri: uri }, { merge: true });
-    } catch (error) {
-      console.error('Error saving image URI:', error);
-    }
+    // Kommentera bort all kod här för att se om det påverkar återrenderingen
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.imageContainer}>
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.profileImage} />
         ) : (
           <View style={styles.placeholderImage} />
         )}
-        <Pressable style={styles.editIcon} onPress={handleChoosePhoto}>
+        <Pressable role="button" style={styles.editIcon} onPress={handleChoosePhoto}>
           <Text style={styles.editIconText}>✎</Text>
         </Pressable>
       </View>
       <Text style={styles.username}>{username || 'Static Username'}</Text>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
@@ -71,6 +51,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'relative',
+    marginBottom: 20,
   },
   profileImage: {
     width: 100,
@@ -102,7 +83,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   username: {
-    marginTop: 10,
     fontSize: 24,
     fontWeight: 'bold',
   },

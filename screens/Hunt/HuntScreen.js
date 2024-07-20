@@ -79,8 +79,10 @@ const HuntScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    //flex: 1,
     padding: 16,
+    marginLeft: 300,
+    width: 250,
     backgroundColor: '#fff',
   },
   header: {
@@ -88,6 +90,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
   },
+  //conteiner för förfrågningar
   item: {
     padding: 10,
     borderBottomWidth: 1,
