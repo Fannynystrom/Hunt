@@ -73,42 +73,54 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#fff',
   },
+    // Container för profilbild och redigeringsikon
   imageContainer: {
     position: 'relative',
     marginBottom: 20,
+
   },
+    // profilbilden
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 250,
+    height: 250,
+    borderRadius: 125,
+    borderWidth: 4, 
+    borderColor: '#007BFF', 
   },
+    //  platshållarbilden (visas om ingen bild finns)
   placeholderImage: {
-    width: 100,
-    height: 100,
+    width: 250,
+    height: 250,
     borderRadius: 50,
     backgroundColor: '#ccc',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 2, 
+    borderColor: '#007BFF', 
   },
+    // container för redigeringsikon
   editIcon: {
     position: 'absolute',
     bottom: 0,
     right: 0,
     backgroundColor: '#007BFF',
-    borderRadius: 15,
-    width: 30,
-    height: 30,
+    borderRadius: 40,
+    width: 80,
+    height: 80,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 2, 
+    borderColor: '#fff', 
   },
+    // pennan i redigeringsikon
   editIconText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 30,
     fontWeight: 'bold',
   },
   username: {
