@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SectionList, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, SectionList, TextInput, Pressable, StyleSheet, ScrollView, Button } from 'react-native';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 
-const InviteScreen = ({ navigation }) => {
+const FriendsScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -51,7 +51,7 @@ const InviteScreen = ({ navigation }) => {
           userId,
           status: 'pending'
         });
-        console.log('Invitation sent to user:', userId); // Logg för att se att inbjudan skickas
+        console.log('Invitation sent to user:', userId); // consolelog för att se inbjudan
       }
       alert('Invitations sent successfully!');
       setSelectedUsers([]);
@@ -92,7 +92,7 @@ const InviteScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Invite Friends</Text>
+      <Text style={styles.header}>Friends</Text>
       <TextInput
         style={styles.searchInput}
         placeholder="Search"
@@ -115,8 +115,8 @@ const InviteScreen = ({ navigation }) => {
           ))}
         </View>
       </View>
-      <Pressable style={styles.inviteButton} onPress={handleInvite}>
-        <Text style={styles.inviteButtonText}>INVITE</Text>
+      <Pressable style={styles.inviteButton} onPress={() => navigation.navigate('Invite')}>
+        <Text style={styles.inviteButtonText}>Invite Friends</Text>
       </Pressable>
     </ScrollView>
   );
@@ -212,4 +212,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InviteScreen;
+export default FriendsScreen;

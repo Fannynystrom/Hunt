@@ -5,11 +5,12 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 
 import LoginScreen from '../screens/Login/LoginScreen';
 import SignupScreen from '../screens/Signup/SignupScreen';
-//import HomeScreen from '../screens/Home/HomeScreen';
 import HuntScreen from '../screens/Hunt/HuntScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import FriendsScreen from '../screens/Friends/FriendsScreen';
 import InviteScreen from '../screens/Invite/InviteScreen';
+import AddPlacesScreen from '../screens/AddPlaces/AddPlacesScreen';
+import ConfirmHuntScreen from '../screens/ConfirmHunt/ConfirmHuntScreen';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -24,7 +25,6 @@ function MainTabs() {
   );
 }
 
-
 function AppNavigator() {
   return (
     <NavigationContainer>
@@ -33,6 +33,8 @@ function AppNavigator() {
         <Stack.Screen name="Signup" component={SignupScreen} options={{ title: 'Sign Up' }} />
         <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
         <Stack.Screen name="Invite" component={InviteScreen} options={{ title: 'Invite' }} />
+        <Stack.Screen name="AddPlaces" component={AddPlacesScreen} options={{ title: 'Add Places' }} />
+        <Stack.Screen name="ConfirmHunt" component={ConfirmHuntScreen} options={{ title: 'Confirm Hunt' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

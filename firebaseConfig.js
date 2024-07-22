@@ -12,15 +12,6 @@ import {
   FIREBASE_MEASUREMENT_ID,
 } from '@env';
 
-// Debug-loggning för att kontrollera att miljövariablerna laddas korrekt
-console.log('API Key:', FIREBASE_API_KEY);
-console.log('Auth Domain:', FIREBASE_AUTH_DOMAIN);
-console.log('Project ID:', FIREBASE_PROJECT_ID);
-console.log('Storage Bucket:', FIREBASE_STORAGE_BUCKET);
-console.log('Messaging Sender ID:', FIREBASE_MESSAGING_SENDER_ID);
-console.log('App ID:', FIREBASE_APP_ID);
-console.log('Measurement ID:', FIREBASE_MEASUREMENT_ID);
-
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,
   authDomain: FIREBASE_AUTH_DOMAIN,

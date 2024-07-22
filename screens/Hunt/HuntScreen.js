@@ -1,35 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
-import { db, auth } from '../../firebaseConfig';
-import { collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
+import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
 
-const HuntScreen = () => {
+const HuntScreen = ({ navigation }) => {
   const [invitations, setInvitations] = useState([]);
 
   useEffect(() => {
     const fetchInvitations = async () => {
       try {
-        const user = auth.currentUser;
-        if (!user) {
-          console.error('No user is logged in');
-          return;
-        }
-
         const querySnapshot = await getDocs(collection(db, 'invitations'));
-        const invitationsList = await Promise.all(
-          querySnapshot.docs.map(async (invitationDoc) => {
-            const data = invitationDoc.data();
-            const userDocRef = doc(db, 'users', data.userId);
-            const userDoc = await getDoc(userDocRef);
-            const userData = userDoc.data();
-            return {
-              id: invitationDoc.id,
-              userId: data.userId,
-              status: data.status,
-              senderUsername: userData ? userData.username : 'N/A',
-            };
-          })
-        );
+        const invitationsList = await Promise.all(querySnapshot.docs.map(async (docSnap) => {
+          const userDocRef = doc(db, 'users', docSnap.data().userId);
+          const userDocSnap = await getDoc(userDocRef);
+          return { id: docSnap.id, ...docSnap.data(), username: userDocSnap.data()?.username || 'N/A' };
+        }));
         setInvitations(invitationsList);
       } catch (error) {
         console.error('Error fetching invitations:', error);
@@ -39,29 +24,10 @@ const HuntScreen = () => {
     fetchInvitations();
   }, []);
 
-  const handleAccept = async (invitationId) => {
-    try {
-      const invitationRef = doc(db, 'invitations', invitationId);
-      await updateDoc(invitationRef, { status: 'accepted' });
-      setInvitations((prevInvitations) =>
-        prevInvitations.map((invitation) =>
-          invitation.id === invitationId ? { ...invitation, status: 'accepted' } : invitation
-        )
-      );
-    } catch (error) {
-      console.error('Error accepting invitation:', error);
-    }
-  };
-
   const renderItem = ({ item }) => (
     <View style={styles.item}>
-      <Text style={styles.text}>Username: {item.senderUsername}</Text>
+      <Text style={styles.text}>Username: {item.username}</Text>
       <Text style={styles.text}>Status: {item.status}</Text>
-      {item.status === 'pending' && (
-        <Pressable style={styles.acceptButton} onPress={() => handleAccept(item.id)}>
-          <Text style={styles.acceptButtonText}>Accept</Text>
-        </Pressable>
-      )}
     </View>
   );
 
@@ -73,16 +39,17 @@ const HuntScreen = () => {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
       />
+      <Pressable style={styles.newHuntButton} onPress={() => navigation.navigate('Invite')}>
+        <Text style={styles.newHuntButtonText}>Start New Hunt</Text>
+      </Pressable>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    //flex: 1,
+    flex: 1,
     padding: 16,
-    marginLeft: 300,
-    width: 250,
     backgroundColor: '#fff',
   },
   header: {
@@ -90,7 +57,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
   },
-  //conteiner för förfrågningar
   item: {
     padding: 10,
     borderBottomWidth: 1,
@@ -99,17 +65,18 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
   },
-  acceptButton: {
+  newHuntButton: {
     backgroundColor: '#007BFF',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    marginTop: 10,
+    paddingVertical: 15,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
   },
-  acceptButtonText: {
+  newHuntButtonText: {
     color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 

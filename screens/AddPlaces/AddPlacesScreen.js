@@ -19,8 +19,7 @@ const AddPlacesScreen = ({ navigation }) => {
   );
 
   const handleCreateHunt = () => {
-    // navigera till Confirm Hunt skärmen och skicka med platserna
-    navigation.navigate('ConfirmHunt', { places });
+    navigation.navigate('ConfirmHunt', { places }); // skicka places som en parameter
   };
 
   return (
@@ -39,7 +38,7 @@ const AddPlacesScreen = ({ navigation }) => {
         renderItem={renderPlaceItem}
         style={styles.placeList}
       />
-      <Button title="History Hunt" onPress={handleCreateHunt} />
+      <Button title="Create Hunt" onPress={handleCreateHunt} />
     </View>
   );
 };
@@ -64,8 +63,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   placeList: {
-    flex: 1,
-    marginTop: 16,
+    marginVertical: 16,
   },
   placeItem: {
     padding: 10,

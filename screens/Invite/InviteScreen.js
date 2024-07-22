@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SectionList, TextInput, Pressable, StyleSheet } from 'react-native';
+import { View, Text, SectionList, TextInput, Pressable, StyleSheet, Button } from 'react-native';
 import { db, auth } from '../../firebaseConfig';
-import { collection, getDocs, doc, getDoc, addDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
 
 const InviteScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
@@ -46,32 +46,17 @@ const InviteScreen = ({ navigation }) => {
 
   const handleInvite = async () => {
     try {
-      const user = auth.currentUser;
-      if (!user) {
-        console.error('No user is logged in');
-        return;
-      }
-
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      const userData = userDoc.data();
-      const senderUsername = userData?.username;
-
-      if (!senderUsername) {
-        console.error('Sender username not found');
-        return;
-      }
-
-      console.log('Inviting users with senderUsername:', senderUsername);
-
+      const senderUserId = auth.currentUser.uid;
       for (let userId of selectedUsers) {
         await addDoc(collection(db, 'invitations'), {
           userId,
-          status: 'pending',
-          senderUsername: senderUsername // Spara avsändarens användarnamn
+          senderUserId,
+          status: 'pending'
         });
       }
       alert('Invitations sent successfully!');
       setSelectedUsers([]);
+      navigation.navigate('AddPlaces'); // Navigera till AddPlacesScreen efter att ha skickat inbjudningar
     } catch (error) {
       console.error('Error inviting users:', error);
       alert('Failed to invite users. Please try again.');
