@@ -3,25 +3,54 @@ import { View, Text, Image, Pressable, StyleSheet, ScrollView } from 'react-nati
 import { useUser } from '../../context/UserContext';
 import * as ImagePicker from 'react-native-image-picker';
 import { doc, setDoc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
+import { db, storage } from '../../firebaseConfig';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const ProfileScreen = () => {
-  const { user, username } = useUser();
-  const [imageUri, setImageUri] = useState(null);
+  const { user, username, imageUri: initialImageUri } = useUser();
+  const [imageUri, setImageUri] = useState(initialImageUri);
 
   useEffect(() => {
-    if (user) {
-      console.log("User is logged in:", user);
-      console.log("Fetched user profile with username:", username);
+    if (initialImageUri) {
+      setImageUri(initialImageUri);
     }
-  }, [user, username]);
+  }, [initialImageUri]);
 
   const handleChoosePhoto = async () => {
-    // Kommentera bort all kod här för att se om det påverkar återrenderingen
+    const result = await ImagePicker.launchImageLibrary({
+      mediaType: 'photo',
+      quality: 1,
+    });
+
+    if (result.didCancel) return;
+
+    if (result.assets && result.assets.length > 0) {
+      const uri = result.assets[0].uri;
+      setImageUri(uri);
+      await uploadImageToStorage(uri);
+    }
+  };
+
+  const uploadImageToStorage = async (uri) => {
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const storageRef = ref(storage, `profilePictures/${user.uid}`);
+      await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(storageRef);
+      await saveImageUriToFirestore(downloadURL);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
   };
 
   const saveImageUriToFirestore = async (uri) => {
-    // Kommentera bort all kod här för att se om det påverkar återrenderingen
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await setDoc(userRef, { imageUri: uri }, { merge: true });
+    } catch (error) {
+      console.error('Error saving image URI:', error);
+    }
   };
 
   return (

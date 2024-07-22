@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SectionList, TextInput, Pressable, StyleSheet, ScrollView, Button } from 'react-native';
+import { View, Text, SectionList, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 
@@ -28,7 +28,7 @@ const FriendsScreen = ({ navigation }) => {
     setSearchQuery(query);
     if (query) {
       const filtered = users.filter(user =>
-        user.username.toLowerCase().includes(query.toLowerCase())
+        user.username && user.username.toLowerCase().includes(query.toLowerCase())
       );
       setFilteredUsers(filtered);
     } else {
@@ -51,7 +51,7 @@ const FriendsScreen = ({ navigation }) => {
           userId,
           status: 'pending'
         });
-        console.log('Invitation sent to user:', userId); // consolelog för att se inbjudan
+        console.log('Invitation sent to user:', userId);
       }
       alert('Invitations sent successfully!');
       setSelectedUsers([]);
@@ -69,7 +69,7 @@ const FriendsScreen = ({ navigation }) => {
         onPress={() => handleSelectUser(item.id)}
       >
         <View style={[styles.userAvatar, isSelected && styles.selectedUserAvatar]}>
-          <Text style={styles.userInitial}>{item.username[0]}</Text>
+          <Text style={styles.userInitial}>{item.username && item.username[0]}</Text>
         </View>
         <Text style={styles.username}>{item.username}</Text>
         {isSelected && <Text style={styles.checkmark}>✓</Text>}
@@ -87,7 +87,7 @@ const FriendsScreen = ({ navigation }) => {
 
   const groupedUsers = alphabet.map(letter => ({
     title: letter,
-    data: filteredUsers.filter(user => user.username[0].toUpperCase() === letter)
+    data: filteredUsers.filter(user => user.username && user.username[0].toUpperCase() === letter)
   })).filter(group => group.data.length > 0);
 
   return (
