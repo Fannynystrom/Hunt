@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     height: 250,
     borderRadius: 125,
     borderWidth: 4, 
-    borderColor: '#007BFF', 
+    borderColor: '007BFF#', 
   },
     //  platshållarbilden (visas om ingen bild finns)
   placeholderImage: {
@@ -110,8 +110,8 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: '#007BFF',
     borderRadius: 40,
-    width: 80,
-    height: 80,
+    width: 70,
+    height: 70,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2, 
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     // pennan i redigeringsikon
   editIconText: {
     color: '#fff',
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: 'bold',
   },
   username: {

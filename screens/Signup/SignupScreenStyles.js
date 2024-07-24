@@ -8,6 +8,10 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
+  headerImage: {
+    marginBottom: 10,
+
+  },
   input: {
     width: '50%',
     height: 40,

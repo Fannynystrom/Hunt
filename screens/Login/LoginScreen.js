@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, Image } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import styles from '../Login/LoginScreenStyles'; 
@@ -22,6 +22,8 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+            <Image source={require('../../assets/rubrik.png')} style={styles.headerImage} />
+
       <TextInput
         style={styles.input}
         placeholder="Email"

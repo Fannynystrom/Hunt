@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { auth, db } from '../../firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
 import styles from '../Signup/SignupScreenStyles'; 
-import { View, TextInput, Button, Text, TouchableOpacity } from 'react-native';
+import { View, TextInput, Button, Text, TouchableOpacity, Image } from 'react-native';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -35,6 +35,7 @@ const SignUp = () => {
 
   return (
     <View style={styles.container}>
+      <Image source={require('../../assets/rubrik.png')} style={styles.headerImage} />
       <TextInput
         style={styles.input}
         placeholder="Email"
