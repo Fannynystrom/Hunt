@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth, db, storage } from '../firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, getDownloadURL } from 'firebase/storage';
 
 const UserContext = createContext();
@@ -9,6 +9,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState(null);
   const [imageUri, setImageUri] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserProfile = async (uid) => {
@@ -23,9 +24,18 @@ export const UserProvider = ({ children }) => {
             setImageUri(userData.imageUri);
           } else {
             const storageRef = ref(storage, `profilePictures/${uid}`);
-            const url = await getDownloadURL(storageRef);
-            setImageUri(url);
-            await saveImageUriToFirestore(uid, url);
+            try {
+              const url = await getDownloadURL(storageRef);
+              setImageUri(url);
+              await saveImageUriToFirestore(uid, url);
+            } catch (error) {
+              if (error.code === 'storage/object-not-found') {
+                console.warn('Profile picture not found, using default image instead');
+                setImageUri(null); 
+              } else {
+                throw error;
+              }
+            }
           }
         } else {
           console.log('No such document!');
@@ -35,15 +45,16 @@ export const UserProvider = ({ children }) => {
       }
     };
 
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        fetchUserProfile(currentUser.uid);
+        await fetchUserProfile(currentUser.uid);
       } else {
         setUser(null);
         setUsername(null);
         setImageUri(null);
       }
+      setIsLoading(false);
     });
 
     return () => unsubscribe();
@@ -59,7 +70,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, username, imageUri }}>
+    <UserContext.Provider value={{ user, username, imageUri, isLoading }}>
       {children}
     </UserContext.Provider>
   );

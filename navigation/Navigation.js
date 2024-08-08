@@ -17,13 +17,21 @@ const Stack = createStackNavigator();
 
 function MainTabs() {
   return (
-    <Tab.Navigator initialRouteName="Profile">
+    <Tab.Navigator
+      initialRouteName="Profile"
+      screenOptions={{
+        tabBarStyle: {
+          marginTop: 30, 
+        },
+      }}
+    >
       <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Hunt" component={HuntScreen} />
       <Tab.Screen name="Friends" component={FriendsScreen} />
     </Tab.Navigator>
   );
 }
+
 
 function AppNavigator() {
   return (
