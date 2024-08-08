@@ -70,6 +70,47 @@ const CreateHuntScreen = ({ navigation }) => {
   );
 };
 
+const styles = StyleSheet.create({
+  container: 
+  { flex: 1,
+    padding: 20
+ },
 
+  header:
+   { fontSize: 24,
+     fontWeight: 'bold',
+      marginBottom: 20 
+    },
+    
+  input:
+   { borderWidth: 1,
+     borderColor: '#ccc',
+      padding: 10,
+     marginBottom: 20 
+    },
+
+  imagePicker:
+   { padding: 10, 
+    backgroundColor: '#ddd',
+    alignItems: 'center' 
+   },
+
+  image:
+   { width: 100,
+     height: 100,
+      marginTop: 10
+     },
+  createButton:
+   { padding: 15,
+     backgroundColor: '#28a745',
+      alignItems: 'center' 
+    },
+
+  buttonText:
+   { color: '#fff',
+    fontSize: 16
+ },
+
+});
 
 export default CreateHuntScreen;
