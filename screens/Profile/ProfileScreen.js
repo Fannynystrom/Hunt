@@ -77,6 +77,9 @@ const ProfileScreen = ({ navigation }) => {
       <Pressable style={styles.createHuntButton} onPress={() => navigation.navigate('CreateHunt')}>
         <Text style={styles.createHuntButtonText}>Create Hunt</Text>
       </Pressable>
+      <View style={styles.medalsContainer}>
+      <Text style={styles.medalsTitle}>MEDALS</Text>
+      </View>
     </ScrollView>
   );
 };
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
-    marginTop: 20,
+    marginTop: 40,
   },
   sectionTitle: {
     fontSize: 18,
@@ -166,12 +169,27 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 60,
     alignSelf: 'flex-start',
+
   },
   //texten i knappen createhunt
   createHuntButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+
+  //container för "medalj"
+  medalsContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#F8F8F8', 
+    width: '100%',
+  },
+  medalsTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#007BFF', 
   },
 
 });
