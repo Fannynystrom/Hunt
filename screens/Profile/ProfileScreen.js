@@ -65,8 +65,14 @@ const ProfileScreen = ({ navigation }) => {
           <Text style={styles.editIconText}>✎</Text>
         </Pressable>
       </View>
+
       <Text style={styles.username}>{username || 'Static Username'}</Text>
       
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Active Hunts</Text>
+        <Text style={styles.sectionTitle}>Planned Hunts</Text>
+      </View>
+
       <Pressable style={styles.createHuntButton} onPress={() => navigation.navigate('CreateHunt')}>
         <Text style={styles.createHuntButtonText}>Create Hunt</Text>
       </Pressable>
@@ -128,10 +134,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   username: {
-    fontSize: 24,
+    fontSize: 34,
     fontWeight: 'bold',
   },
 
+//container för createhunt knappen
   createHuntButton: {
     backgroundColor: '#007BFF',
     borderColor: '#000',
@@ -141,6 +148,7 @@ const styles = StyleSheet.create({
     marginTop: 60,
     alignSelf: 'flex-start',
   },
+  //texten i knappen createhunt
   createHuntButtonText: {
     color: '#fff',
     fontSize: 16,
