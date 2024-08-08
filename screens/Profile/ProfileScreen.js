@@ -72,6 +72,7 @@ const ProfileScreen = ({ navigation }) => {
         <Text style={styles.sectionTitle}>Active Hunts</Text>
         <Text style={styles.sectionTitle}>Planned Hunts</Text>
       </View>
+ 
 
       <Pressable style={styles.createHuntButton} onPress={() => navigation.navigate('CreateHunt')}>
         <Text style={styles.createHuntButtonText}>Create Hunt</Text>
@@ -136,6 +137,24 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 34,
     fontWeight: 'bold',
+  },
+
+  //rubrikerna active hunts och planned hunts
+  sectionHeader: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginTop: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#007BFF',
+    padding: 10,
+    borderRadius: 5,
+    textAlign: 'center',
+    marginHorizontal: 5,
   },
 
 //container för createhunt knappen
