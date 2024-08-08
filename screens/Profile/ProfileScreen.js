@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     height: 250,
     borderRadius: 125,
     borderWidth: 4, 
-    borderColor: '007BFF#', 
+    borderColor: 'black', 
   },
     //  platshållarbilden (visas om ingen bild finns)
   placeholderImage: {
@@ -165,9 +165,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#007BFF',
     borderColor: '#000',
     borderWidth: 1,
-    padding: 10,
+    paddingTop: 12,
+    paddingBottom: 12,
+    paddingRight: 30,
+    paddingLeft:30,
     borderRadius: 5,
     marginTop: 60,
+    marginLeft: 20,
     alignSelf: 'flex-start',
 
   },
@@ -185,6 +189,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#F8F8F8', 
     width: '100%',
+    marginTop: 60,
   },
   medalsTitle: {
     fontSize: 18,
