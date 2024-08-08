@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
      fontWeight: 'bold',
       marginBottom: 20 
     },
-    
+
   input:
    { borderWidth: 1,
      borderColor: '#ccc',
@@ -102,14 +102,18 @@ const styles = StyleSheet.create({
      },
   createButton:
    { padding: 15,
-     backgroundColor: '#28a745',
+     backgroundColor: '#007BFF',
       alignItems: 'center' 
     },
+
 
   buttonText:
    { color: '#fff',
     fontSize: 16
  },
+
+
+
 
 });
 

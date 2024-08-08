@@ -132,6 +132,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
+  createHuntButton: {
+    backgroundColor: '#007BFF',
+    borderColor: '#000',
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 60,
+    alignSelf: 'flex-start',
+  },
+  createHuntButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
 });
 
 export default ProfileScreen;
