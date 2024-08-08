@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { useUser } from '../../context/UserContext';
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from 'react-native-image-picker';
 import { doc, setDoc } from 'firebase/firestore';
 import { db, storage } from '../../firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
   const { user, username, imageUri: initialImageUri } = useUser();
   const [imageUri, setImageUri] = useState(initialImageUri);
 
@@ -17,18 +17,14 @@ const ProfileScreen = () => {
   }, [initialImageUri]);
 
   const handleChoosePhoto = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Sorry, we need camera roll permissions to make this work!');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    const result = await ImagePicker.launchImageLibrary({
+      mediaType: 'photo',
       quality: 1,
     });
 
-    if (!result.cancelled) {
+    if (result.didCancel) return;
+
+    if (result.assets && result.assets.length > 0) {
       const uri = result.assets[0].uri;
       setImageUri(uri);
       await uploadImageToStorage(uri);
@@ -58,19 +54,23 @@ const ProfileScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.imageContainer}>
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.profileImage} />
         ) : (
           <View style={styles.placeholderImage} />
         )}
-        <Pressable style={styles.editIcon} onPress={handleChoosePhoto}>
+        <Pressable role="button" style={styles.editIcon} onPress={handleChoosePhoto}>
           <Text style={styles.editIconText}>✎</Text>
         </Pressable>
       </View>
       <Text style={styles.username}>{username || 'Static Username'}</Text>
-    </View>
+      
+      <Pressable style={styles.createHuntButton} onPress={() => navigation.navigate('CreateHunt')}>
+        <Text style={styles.createHuntButtonText}>Create Hunt</Text>
+      </Pressable>
+    </ScrollView>
   );
 };
 

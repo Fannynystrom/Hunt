@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SectionList, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, SectionList, TextInput, Pressable, StyleSheet } from 'react-native';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 
@@ -91,7 +91,7 @@ const FriendsScreen = ({ navigation }) => {
   })).filter(group => group.data.length > 0);
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.header}>Friends</Text>
       <TextInput
         style={styles.searchInput}
@@ -115,10 +115,10 @@ const FriendsScreen = ({ navigation }) => {
           ))}
         </View>
       </View>
-      <Pressable style={styles.inviteButton} onPress={() => navigation.navigate('Invite')}>
+      <Pressable style={styles.inviteButton} onPress={handleInvite}>
         <Text style={styles.inviteButtonText}>Invite Friends</Text>
       </Pressable>
-    </ScrollView>
+    </View>
   );
 };
 

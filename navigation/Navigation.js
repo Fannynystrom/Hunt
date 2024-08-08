@@ -1,3 +1,4 @@
+// navigation.js
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -11,27 +12,20 @@ import FriendsScreen from '../screens/Friends/FriendsScreen';
 import InviteScreen from '../screens/Invite/InviteScreen';
 import AddPlacesScreen from '../screens/AddPlaces/AddPlacesScreen';
 import ConfirmHuntScreen from '../screens/ConfirmHunt/ConfirmHuntScreen';
+import CreateHuntScreen from '../screens/Hunt/CreateHuntScreen';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 
 function MainTabs() {
   return (
-    <Tab.Navigator
-      initialRouteName="Profile"
-      screenOptions={{
-        tabBarStyle: {
-          marginTop: 30, 
-        },
-      }}
-    >
+    <Tab.Navigator initialRouteName="Profile">
       <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Hunt" component={HuntScreen} />
       <Tab.Screen name="Friends" component={FriendsScreen} />
     </Tab.Navigator>
   );
 }
-
 
 function AppNavigator() {
   return (
@@ -43,6 +37,7 @@ function AppNavigator() {
         <Stack.Screen name="Invite" component={InviteScreen} options={{ title: 'Invite' }} />
         <Stack.Screen name="AddPlaces" component={AddPlacesScreen} options={{ title: 'Add Places' }} />
         <Stack.Screen name="ConfirmHunt" component={ConfirmHuntScreen} options={{ title: 'Confirm Hunt' }} />
+        <Stack.Screen name="CreateHunt" component={CreateHuntScreen} options={{ title: 'Create Hunt' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
