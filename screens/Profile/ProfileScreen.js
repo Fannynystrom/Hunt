@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useUser } from '../../context/UserContext';
 import * as ImagePicker from 'react-native-image-picker';
 import { doc, setDoc } from 'firebase/firestore';
 import { db, storage } from '../../firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { auth } from '../../firebaseConfig'; 
 
 const ProfileScreen = ({ navigation }) => {
   const { user, username, imageUri: initialImageUri } = useUser();
@@ -53,8 +54,31 @@ const ProfileScreen = ({ navigation }) => {
     }
   };
 
+  const handleLogout = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Yes",
+          onPress: async () => {
+            await auth.signOut();
+            navigation.replace('Login'); //skickar tillbaka till login
+          }
+        }
+      ]
+    );
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Pressable style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>X</Text>
+      </Pressable>
       <View style={styles.imageContainer}>
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.profileImage} />
@@ -72,17 +96,18 @@ const ProfileScreen = ({ navigation }) => {
         <Text style={styles.sectionTitle}>Active Hunts</Text>
         <Text style={styles.sectionTitle}>Planned Hunts</Text>
       </View>
- 
+   
 
       <Pressable style={styles.createHuntButton} onPress={() => navigation.navigate('CreateHunt')}>
         <Text style={styles.createHuntButtonText}>Create Hunt</Text>
       </Pressable>
       <View style={styles.medalsContainer}>
-      <Text style={styles.medalsTitle}>MEDALS</Text>
+        <Text style={styles.medalsTitle}>MEDALS</Text>
       </View>
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -92,6 +117,20 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
+
+  logoutButton: {
+    position: 'absolute',
+    top: 10,
+    left: 15,
+    zIndex: 1,
+  },
+  logoutButtonText: {
+    fontSize: 29,
+    fontWeight: 'bold',
+    color: '#007BFF',
+  },
+
+
     // Container för profilbild och redigeringsikon
   imageContainer: {
     position: 'relative',
