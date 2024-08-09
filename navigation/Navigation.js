@@ -8,7 +8,6 @@ import LoginScreen from '../screens/Login/LoginScreen';
 import SignupScreen from '../screens/Signup/SignupScreen';
 import HuntScreen from '../screens/Hunt/HuntScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
-import FriendsScreen from '../screens/Friends/FriendsScreen';
 import InviteScreen from '../screens/Invite/InviteScreen';
 import AddPlacesScreen from '../screens/AddPlaces/AddPlacesScreen';
 import ConfirmHuntScreen from '../screens/ConfirmHunt/ConfirmHuntScreen';
@@ -22,7 +21,6 @@ function MainTabs() {
     <Tab.Navigator initialRouteName="Profile">
       <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Hunt" component={HuntScreen} />
-      <Tab.Screen name="Friends" component={FriendsScreen} />
     </Tab.Navigator>
   );
 }
