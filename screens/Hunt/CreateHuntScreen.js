@@ -1,120 +1,147 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
 import * as ImagePicker from 'expo-image-picker';
 
 const CreateHuntScreen = ({ navigation }) => {
-  const [huntName, setHuntName] = useState('');
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState('');
   const [imageUri, setImageUri] = useState(null);
 
-  const handleCreateHunt = async () => {
-    try {
-      const huntRef = await addDoc(collection(db, 'hunts'), {
-        name: huntName,
-        description: description,
-        duration: duration,
-        imageUri: imageUri
-      });
-      console.log('Hunt created with ID:', huntRef.id);
-      navigation.navigate('Invite', { huntId: huntRef.id });
-    } catch (error) {
-      console.error('Error creating hunt:', error);
-    }
+  const handleContinue = () => {
+    navigation.navigate('Invite'); 
   };
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+  const handleChoosePhoto = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
       quality: 1,
     });
 
-    if (!result.canceled) {
+    if (!result.cancelled) {
       setImageUri(result.uri);
     }
   };
 
+  
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Create a New Hunt</Text>
+      <Text style={styles.screenTitle}>Create Hunt</Text>
+      
+      <Text style={styles.inputLabel}>How long should it be?</Text>
       <TextInput
         style={styles.input}
-        placeholder="Hunt Name"
-        value={huntName}
-        onChangeText={setHuntName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Description"
-        value={description}
-        onChangeText={setDescription}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Estimated Duration"
+        placeholder="3 hours? 2 days? You pick."
         value={duration}
         onChangeText={setDuration}
       />
-      <Pressable style={styles.imagePicker} onPress={pickImage}>
-        <Text>Pick an Image</Text>
+      
+      <Text style={styles.inputLabel}>What do you want to call your hunt?</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Name"
+        value={title}
+        onChangeText={setTitle}
+      />
+      
+      <Text style={styles.inputLabel}>Description</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Describe your hunt"
+        value={description}
+        onChangeText={setDescription}
+      />
+
+      <Text style={styles.imageLabel}>Insert image</Text>
+      <Pressable style={styles.imageContainer} onPress={handleChoosePhoto}>
+        {imageUri ? (
+          <Image source={{ uri: imageUri }} style={styles.image} />
+        ) : (
+          <Text style={styles.imagePlaceholder}>+</Text>
+        )}
       </Pressable>
-      {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
-      <Pressable style={styles.createButton} onPress={handleCreateHunt}>
-        <Text style={styles.buttonText}>Create Hunt</Text>
+      
+      <Pressable style={styles.continueButton} onPress={handleContinue}>
+        <Text style={styles.continueButtonText}>CONTINUE</Text>
       </Pressable>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: 
-  { flex: 1,
-    padding: 20
- },
-
-  header:
-   { fontSize: 24,
-     fontWeight: 'bold',
-      marginBottom: 20 
+    container: {
+      flex: 1,
+      padding: 20,
+      backgroundColor: '#fff',
+      
     },
+    screenTitle: {
+      fontSize: 54,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      marginBottom: 70,
+      color: '#007BFF',
 
-  input:
-   { borderWidth: 1,
-     borderColor: '#ccc',
+    },
+    inputLabel: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#2c2c2c',
+      marginBottom: 5,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
       padding: 10,
-     marginBottom: 20 
+      marginBottom: 20,
     },
-
-  imagePicker:
-   { padding: 10, 
-    backgroundColor: '#ddd',
-    alignItems: 'center' 
-   },
-
-  image:
-   { width: 100,
-     height: 100,
-      marginTop: 10
-     },
-  createButton:
-   { padding: 15,
-     backgroundColor: '#007BFF',
-      alignItems: 'center' 
+    imageLabel: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#007BFF',
+      marginBottom: 20,
+      textAlign: 'center',
     },
-
-
-  buttonText:
-   { color: '#fff',
-    fontSize: 16
- },
-
-
-
-
-});
+    imageContainer: {
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      borderWidth: 1,
+      borderColor: '#000',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignSelf: 'center',
+      marginBottom: 40,
+    },
+    image: {
+      width: '100%',
+      height: '100%',
+      borderRadius: 50,
+    },
+    imagePlaceholder: {
+      fontSize: 36,
+      color: '#000',
+    },
+    continueButton: {
+      backgroundColor: '#007BFF',
+      padding: 15,
+      borderRadius: 5,
+      alignItems: 'center',
+    },
+    continueButtonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+  });
+  
 
 export default CreateHuntScreen;

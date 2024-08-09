@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SectionList, TextInput, Pressable, StyleSheet, Button } from 'react-native';
-import { db, auth } from '../../firebaseConfig';
+import { View, Text, FlatList, TextInput, Pressable, StyleSheet, Image } from 'react-native';
+import { db, storage, auth } from '../../firebaseConfig';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { ref, getDownloadURL } from 'firebase/storage';
+import DefaultProfileImage from '../../assets/ingenProfilbild.png'; 
 
 const InviteScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
@@ -10,10 +12,37 @@ const InviteScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
+    if (!auth.currentUser) {
+      console.log('User not authenticated');
+      navigation.navigate('Login');
+      return;
+    }
+
     const fetchUsers = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'users'));
-        const usersList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const usersList = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const userData = { id: doc.id, ...doc.data() };
+            try {
+              if (userData.imageUri) {
+                userData.avatar = userData.imageUri;
+              } else {
+                const url = await getDownloadURL(ref(storage, `profilePictures/${doc.id}`));
+                userData.avatar = url;
+              }
+            } catch (error) {
+              if (error.code === 'storage/object-not-found' || error.code === 'storage/unauthorized') {
+                console.warn(`Profile picture for ${doc.id} not found or unauthorized, using default image`);
+                userData.avatar = Image.resolveAssetSource(DefaultProfileImage).uri;
+              } else {
+                console.error(`Error fetching profile picture for user ${doc.id}:`, error);
+                userData.avatar = Image.resolveAssetSource(DefaultProfileImage).uri;
+              }
+            }
+            return userData;
+          })
+        );
         setUsers(usersList);
         setFilteredUsers(usersList);
       } catch (error) {
@@ -28,7 +57,7 @@ const InviteScreen = ({ navigation }) => {
     setSearchQuery(query);
     if (query) {
       const filtered = users.filter(user =>
-        user.username.toLowerCase().includes(query.toLowerCase())
+        user.username && user.username.toLowerCase().includes(query.toLowerCase())
       );
       setFilteredUsers(filtered);
     } else {
@@ -46,17 +75,15 @@ const InviteScreen = ({ navigation }) => {
 
   const handleInvite = async () => {
     try {
-      const senderUserId = auth.currentUser.uid;
       for (let userId of selectedUsers) {
         await addDoc(collection(db, 'invitations'), {
           userId,
-          senderUserId,
           status: 'pending'
         });
+        console.log('Invitation sent to user:', userId);
       }
       alert('Invitations sent successfully!');
       setSelectedUsers([]);
-      navigation.navigate('AddPlaces'); // Navigera till AddPlacesScreen efter att ha skickat inbjudningar
     } catch (error) {
       console.error('Error inviting users:', error);
       alert('Failed to invite users. Please try again.');
@@ -70,9 +97,7 @@ const InviteScreen = ({ navigation }) => {
         style={[styles.userItem, isSelected && styles.selectedUserItem]}
         onPress={() => handleSelectUser(item.id)}
       >
-        <View style={[styles.userAvatar, isSelected && styles.selectedUserAvatar]}>
-          <Text style={styles.userInitial}>{item.username[0]}</Text>
-        </View>
+        <Image source={{ uri: item.avatar }} style={styles.userAvatar} />
         <Text style={styles.username}>{item.username}</Text>
         {isSelected && <Text style={styles.checkmark}>✓</Text>}
       </Pressable>
@@ -81,15 +106,9 @@ const InviteScreen = ({ navigation }) => {
 
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
-  const renderSectionHeader = ({ section: { title } }) => (
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionHeaderText}>{title}</Text>
-    </View>
-  );
-
   const groupedUsers = alphabet.map(letter => ({
     title: letter,
-    data: filteredUsers.filter(user => user.username[0].toUpperCase() === letter)
+    data: filteredUsers.filter(user => user.username && user.username[0].toUpperCase() === letter)
   })).filter(group => group.data.length > 0);
 
   return (
@@ -101,21 +120,18 @@ const InviteScreen = ({ navigation }) => {
         value={searchQuery}
         onChangeText={handleSearch}
       />
-      <View style={styles.listContainer}>
-        <SectionList
-          sections={groupedUsers}
-          keyExtractor={(item) => item.id}
-          renderItem={renderUserItem}
-          renderSectionHeader={renderSectionHeader}
-          stickySectionHeadersEnabled
-        />
-        <View style={styles.alphabetContainer}>
-          {groupedUsers.map(({ title }) => (
-            <Pressable key={title}>
-              <Text style={styles.alphabetLetter}>{title}</Text>
-            </Pressable>
-          ))}
-        </View>
+      <View style={styles.alphabetContainer}>
+        {groupedUsers.map(({ title, data }) => (
+          <View key={title} style={styles.letterGroup}>
+            <Text style={styles.sectionHeaderText}>{title}</Text>
+            <FlatList
+              data={data}
+              keyExtractor={(item) => item.id}
+              renderItem={renderUserItem}
+              horizontal
+            />
+          </View>
+        ))}
       </View>
       <Pressable style={styles.inviteButton} onPress={handleInvite}>
         <Text style={styles.inviteButtonText}>INVITE</Text>
@@ -124,94 +140,6 @@ const InviteScreen = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 16,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  searchInput: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 16,
-  },
-  listContainer: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  userItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  selectedUserItem: {
-    backgroundColor: '#e0f7fa',
-  },
-  userAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#007BFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  selectedUserAvatar: {
-    backgroundColor: '#e0f7fa',
-  },
-  userInitial: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  username: {
-    fontSize: 14,
-  },
-  checkmark: {
-    marginLeft: 'auto',
-    color: 'green',
-    fontSize: 18,
-  },
-  inviteButton: {
-    backgroundColor: '#007BFF',
-    paddingVertical: 15,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  inviteButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  sectionHeader: {
-    backgroundColor: '#f5f5f5',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-  },
-  sectionHeaderText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  alphabetContainer: {
-    marginLeft: 10,
-    alignItems: 'center',
-  },
-  alphabetLetter: {
-    fontSize: 16,
-    color: '#007BFF',
-    paddingVertical: 2,
-  },
-});
+
 
 export default InviteScreen;
