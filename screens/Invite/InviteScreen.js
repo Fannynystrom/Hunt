@@ -76,20 +76,19 @@ const InviteScreen = ({ navigation }) => {
   const handleInvite = async () => {
     try {
       for (let userId of selectedUsers) {
-        await addDoc(collection(db, 'invitations'), {
-          userId,
-          status: 'pending'
-        });
-        console.log('Invitation sent to user:', userId);
+        console.log('Invitation prepared for user:', userId);
       }
-      alert('Invitations sent successfully!');
+      alert('Invitations prepared successfully!');
       setSelectedUsers([]);
+      
+      // skickar vidare till nästa process, kartan 
+      navigation.navigate('MapScreen');
     } catch (error) {
       console.error('Error inviting users:', error);
       alert('Failed to invite users. Please try again.');
     }
   };
-
+  
   const renderUserItem = ({ item }) => {
     const isSelected = selectedUsers.includes(item.id);
     return (
