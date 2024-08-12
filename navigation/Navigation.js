@@ -9,7 +9,6 @@ import SignupScreen from '../screens/Signup/SignupScreen';
 import HuntScreen from '../screens/Hunt/HuntScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import InviteScreen from '../screens/Invite/InviteScreen';
-import AddPlacesScreen from '../screens/AddPlaces/AddPlacesScreen';
 import ConfirmHuntScreen from '../screens/ConfirmHunt/ConfirmHuntScreen';
 import CreateHuntScreen from '../screens/Hunt/CreateHuntScreen';
 import MapScreen from '../screens/Map/MapScreen'; 
@@ -35,7 +34,6 @@ function AppNavigator() {
         <Stack.Screen name="Signup" component={SignupScreen} options={{ title: 'Sign Up' }} />
         <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
         <Stack.Screen name="Invite" component={InviteScreen} options={{ title: 'Invite' }} />
-        <Stack.Screen name="AddPlaces" component={AddPlacesScreen} options={{ title: 'Add Places' }} />
         <Stack.Screen name="ConfirmHunt" component={ConfirmHuntScreen} options={{ title: 'Confirm Hunt' }} />
         <Stack.Screen name="CreateHunt" component={CreateHuntScreen} options={{ title: 'Create Hunt' }} />
         <Stack.Screen name="MapScreen" component={MapScreen} options={{ title: 'Select Location' }} /> 
