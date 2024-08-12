@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
+import { View, Text, Dimensions, Pressable } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-
+import styles from '../Map/MapScreenStyles';
 
 const MapScreen = ({ navigation }) => {
  const [selectedLocations, setSelectedLocations] = useState([]);
@@ -51,31 +51,7 @@ const MapScreen = ({ navigation }) => {
 };
 
 
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-    },
-    //absoluteFillObject för att den alltid ska ta upp hela skärmen oavsett om du flyttar kartan
-    map: {
-      ...StyleSheet.absoluteFillObject,
-    },
-    //knappen placeras imitten oavsett om du rör kartan
-    createHuntButton: {
-      position: 'absolute',
-      bottom: 30,
-      backgroundColor: '#007BFF',
-      borderRadius: 50,
-      paddingVertical: 15,
-      paddingHorizontal: 30,
-    },
-    createHuntButtonText: {
-      color: '#fff',
-      fontSize: 18,
-      fontWeight: 'bold',
-    },
-   });
+
    
    
 
