@@ -7,6 +7,8 @@ import { db, storage } from '../../firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth } from '../../firebaseConfig'; 
 import styles from '../Profile/ProfileScreenStyles';
+
+
 const ProfileScreen = ({ navigation }) => {
   const { user, username, imageUri: initialImageUri } = useUser();
   const [imageUri, setImageUri] = useState(initialImageUri);
