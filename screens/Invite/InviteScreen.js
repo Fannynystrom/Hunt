@@ -7,7 +7,8 @@ import DefaultProfileImage from '../../assets/ingenProfilbild.png';
 import styles from '../Invite/InviteScreenStyles';
 
 
-const InviteScreen = ({ navigation }) => {
+const InviteScreen = ({ navigation, route }) => {
+  const { title, description, duration, imageUri } = route.params;  
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -75,20 +76,14 @@ const InviteScreen = ({ navigation }) => {
     );
   };
 
-  const handleInvite = async () => {
-    try {
-      for (let userId of selectedUsers) {
-        console.log('Invitation prepared for user:', userId);
-      }
-      alert('Invitations prepared successfully!');
-      setSelectedUsers([]);
-      
-      // skickar vidare till nästa process, kartan 
-      navigation.navigate('MapScreen');
-    } catch (error) {
-      console.error('Error inviting users:', error);
-      alert('Failed to invite users. Please try again.');
-    }
+  const handleInvite = () => {
+    navigation.navigate('MapScreen', { 
+      selectedUsers, 
+      title, 
+      description, 
+      duration, 
+      imageUri 
+    });
   };
   
   const renderUserItem = ({ item }) => {

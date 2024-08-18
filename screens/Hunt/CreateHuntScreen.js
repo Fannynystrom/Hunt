@@ -10,8 +10,14 @@ const CreateHuntScreen = ({ navigation }) => {
   const [imageUri, setImageUri] = useState(null);
 
   const handleContinue = () => {
-    navigation.navigate('Invite'); 
+    navigation.navigate('Invite', { 
+      title, 
+      description, 
+      duration, 
+      imageUri 
+    });
   };
+  
 
   const handleChoosePhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();

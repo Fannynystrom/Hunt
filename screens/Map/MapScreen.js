@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
-import styles from './MapScreenStyles'; 
+import styles from './MapScreenStyles';
+import { db, auth } from '../../firebaseConfig';
+import { collection, addDoc } from 'firebase/firestore';
 
-export default function MapComponent() {
+const MapScreen = ({ route, navigation }) => {
+  const { selectedUsers, title, description, duration, imageUri } = route.params;
+
   const [location, setLocation] = useState(null);
   const [marker, setMarker] = useState(null);
 
@@ -26,10 +30,38 @@ export default function MapComponent() {
     })();
   }, []);
 
-  const handlePress = (event) => {
-    setMarker({
-      coordinate: event.nativeEvent.coordinate,
-    });
+  const saveHunt = async (latitude, longitude) => {
+    try {
+      const huntsRef = collection(db, 'hunts');
+      const newHunt = {
+        title,
+        description,
+        duration,
+        imageUri,
+        location: {
+          latitude,
+          longitude,
+        },
+        createdBy: auth.currentUser.uid,
+        invitedUsers: selectedUsers,
+        createdAt: new Date(),
+      };
+      
+      await addDoc(huntsRef, newHunt);
+      console.log('Hunt saved successfully!');
+      alert('Hunt created successfully!');
+      navigation.goBack(); // tills ja skapat nästa sida
+    } catch (error) {
+      console.error('Error saving hunt:', error);
+    }
+  };
+
+  const handlePress = async (event) => {
+    const coordinate = event.nativeEvent.coordinate;
+    setMarker({ coordinate });
+
+    // sparar i firebase Hunt
+    await saveHunt(coordinate.latitude, coordinate.longitude);
   };
 
   return (
@@ -53,4 +85,6 @@ export default function MapComponent() {
       )}
     </View>
   );
-}
+};
+
+export default MapScreen;
