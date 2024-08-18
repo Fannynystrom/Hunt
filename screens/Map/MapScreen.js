@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
 import styles from './MapScreenStyles';
@@ -30,7 +30,12 @@ const MapScreen = ({ route, navigation }) => {
     })();
   }, []);
 
-  const saveHunt = async (latitude, longitude) => {
+  const saveHunt = async () => {
+    if (!marker) {
+      alert('Please place a marker on the map to select a location.');
+      return;
+    }
+
     try {
       const huntsRef = collection(db, 'hunts');
       const newHunt = {
@@ -39,8 +44,8 @@ const MapScreen = ({ route, navigation }) => {
         duration,
         imageUri,
         location: {
-          latitude,
-          longitude,
+          latitude: marker.coordinate.latitude,
+          longitude: marker.coordinate.longitude,
         },
         createdBy: auth.currentUser.uid,
         invitedUsers: selectedUsers,
@@ -56,32 +61,36 @@ const MapScreen = ({ route, navigation }) => {
     }
   };
 
-  const handlePress = async (event) => {
+  const handlePress = (event) => {
     const coordinate = event.nativeEvent.coordinate;
     setMarker({ coordinate });
-
-    // sparar i firebase Hunt
-    await saveHunt(coordinate.latitude, coordinate.longitude);
   };
 
   return (
     <View style={styles.container}>
       {location && (
-        <MapView
-          style={styles.map}
-          initialRegion={location}
-          onPress={handlePress}
-        >
-          <Circle
-            center={location}
-            radius={100}
-            strokeColor="rgba(0, 0, 255, 0.5)"
-            fillColor="rgba(0, 0, 255, 0.2)"
-          />
-          {marker && (
-            <Marker coordinate={marker.coordinate} />
-          )}
-        </MapView>
+        <>
+          <MapView
+            style={styles.map}
+            initialRegion={location}
+            onPress={handlePress}
+          >
+            <Circle
+              center={location}
+              radius={100}
+              strokeColor="rgba(0, 0, 255, 0.5)"
+              fillColor="rgba(0, 0, 255, 0.2)"
+            />
+            {marker && (
+              <Marker coordinate={marker.coordinate} />
+            )}
+          </MapView>
+
+          {/* knappen för att skapa */}
+          <Pressable style={styles.createHuntButton} onPress={saveHunt}>
+            <Text style={styles.createHuntButtonText}>HistoryHunt</Text>
+          </Pressable>
+        </>
       )}
     </View>
   );
