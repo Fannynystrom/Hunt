@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { View } from 'react-native';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
+import styles from './MapScreenStyles'; 
 
 export default function MapComponent() {
   const [location, setLocation] = useState(null);
@@ -39,12 +40,11 @@ export default function MapComponent() {
           initialRegion={location}
           onPress={handlePress}
         >
-          
           <Circle
             center={location}
-            radius={100} 
-            strokeColor="rgba(0, 0, 255, 0.5)" 
-            fillColor="rgba(0, 0, 255, 0.2)" 
+            radius={100}
+            strokeColor="rgba(0, 0, 255, 0.5)"
+            fillColor="rgba(0, 0, 255, 0.2)"
           />
           {marker && (
             <Marker coordinate={marker.coordinate} />
@@ -54,15 +54,3 @@ export default function MapComponent() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  map: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-  },
-});
