@@ -21,25 +21,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  markerList: {
-    position: 'absolute',
-    top: 50,
-    left: 10,
-    right: 10,
-    height: 100,
-    backgroundColor: 'white', 
-    zIndex: 1000, 
-  },
-  
-  markerOption: {
-    alignItems: 'center',
-    marginHorizontal: 10,
-  },
-  markerImage: {
-    width: 50,
-    height: 50,
-    backgroundColor: 'red', 
-  },
+ 
   
 });
 
