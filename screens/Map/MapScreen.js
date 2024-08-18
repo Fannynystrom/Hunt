@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
 
-export default function MapScreen() {
+export default function MapComponent() {
   const [location, setLocation] = useState(null);
   const [marker, setMarker] = useState(null);
 
@@ -39,6 +39,13 @@ export default function MapScreen() {
           initialRegion={location}
           onPress={handlePress}
         >
+          
+          <Circle
+            center={location}
+            radius={100} 
+            strokeColor="rgba(0, 0, 255, 0.5)" 
+            fillColor="rgba(0, 0, 255, 0.2)" 
+          />
           {marker && (
             <Marker coordinate={marker.coordinate} />
           )}
