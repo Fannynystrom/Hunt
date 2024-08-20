@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, Pressable, FlatList, Alert } from 'react-native';
 import { useUser } from '../../context/UserContext';
-import * as ImagePicker from 'react-native-image-picker';
+//import * as ImagePicker from 'react-native-image-picker';
 import { doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db, storage } from '../../firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth } from '../../firebaseConfig';
 import styles from '../Profile/ProfileScreenStyles';
+import * as ImagePicker from 'expo-image-picker';
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
+
 
 const ProfileScreen = ({ navigation }) => {
   const { user, username, imageUri: initialImageUri } = useUser();
@@ -55,45 +58,24 @@ const ProfileScreen = ({ navigation }) => {
     fetchActiveHunts();
   }, [user.uid]);
 
-  const handleChoosePhoto = () => {
-    Alert.alert(
-      "Choose an option",
-      "Select a source for your profile picture",
-      [
-        {
-          text: "Choose from library",
-          onPress: async () => {
-            const result = await ImagePicker.launchImageLibrary({
-              mediaType: 'photo',
-              quality: 1,
-            });
-            if (!result.didCancel && result.assets && result.assets.length > 0) {
-              const uri = result.assets[0].uri;
-              setImageUri(uri);
-              await uploadImageToStorage(uri);
-            }
-          },
-        },
-        {
-          text: "Take a photo",
-          onPress: async () => {
-            const result = await ImagePicker.launchCamera({
-              mediaType: 'photo',
-              quality: 1,
-            });
-            if (!result.didCancel && result.assets && result.assets.length > 0) {
-              const uri = result.assets[0].uri;
-              setImageUri(uri);
-              await uploadImageToStorage(uri);
-            }
-          },
-        },
-        {
-          text: "Cancel",
-          style: "cancel"
-        }
-      ]
-    );
+  
+
+  const handleChoosePhoto = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+  
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+  
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+      await uploadImageToStorage(result.assets[0].uri);
+    }
   };
 
   const uploadImageToStorage = async (uri) => {

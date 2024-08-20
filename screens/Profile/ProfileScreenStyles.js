@@ -47,13 +47,12 @@ const styles = StyleSheet.create({
     borderColor: '#007BFF',
   },
 
-
   editIcon: {
     position: 'absolute',
-    bottom: 10, // Justerat för att vara lite ovanför botten
-    right: 10,  // Justerat för att vara lite innanför kanten
+    bottom: 10, 
+    right: 70,  
     backgroundColor: '#007BFF',
-    borderRadius: 35,
+    borderRadius: 40,
     width: 70,
     height: 70,
     justifyContent: 'center',
@@ -61,12 +60,15 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#fff',
   },
+  
 
   editIconText: {
     color: '#fff',
     fontSize: 28,
     fontWeight: 'bold',
   },
+
+
   username: {
     fontSize: 34,
     fontWeight: 'bold',
