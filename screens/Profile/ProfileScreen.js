@@ -1,23 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, Pressable, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, Image, Pressable, FlatList, Alert } from 'react-native';
 import { useUser } from '../../context/UserContext';
 import * as ImagePicker from 'react-native-image-picker';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db, storage } from '../../firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { auth } from '../../firebaseConfig'; 
+import { auth } from '../../firebaseConfig';
 import styles from '../Profile/ProfileScreenStyles';
-
 
 const ProfileScreen = ({ navigation }) => {
   const { user, username, imageUri: initialImageUri } = useUser();
   const [imageUri, setImageUri] = useState(initialImageUri);
+  const [plannedHunts, setPlannedHunts] = useState([]);
+  const [activeHunts, setActiveHunts] = useState([]);
 
   useEffect(() => {
     if (initialImageUri) {
       setImageUri(initialImageUri);
     }
   }, [initialImageUri]);
+
+  useEffect(() => {
+    const fetchPlannedHunts = async () => {
+      try {
+        const huntsRef = collection(db, 'hunts');
+        const plannedQuery = query(huntsRef, where('createdBy', '==', user.uid));
+        const querySnapshot = await getDocs(plannedQuery);
+        const userPlannedHunts = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setPlannedHunts(userPlannedHunts);
+      } catch (error) {
+        console.error('Error fetching planned hunts:', error);
+      }
+    };
+
+    const fetchActiveHunts = async () => {
+      try {
+        const huntsRef = collection(db, 'hunts');
+        const activeQuery = query(huntsRef, where('status', '==', 'active'));
+        const querySnapshot = await getDocs(activeQuery);
+        const userActiveHunts = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setActiveHunts(userActiveHunts);
+      } catch (error) {
+        console.error('Error fetching active hunts:', error);
+      }
+    };
+
+    fetchPlannedHunts();
+    fetchActiveHunts();
+  }, [user.uid]);
 
   const handleChoosePhoto = async () => {
     const result = await ImagePicker.launchImageLibrary({
@@ -69,48 +105,65 @@ const ProfileScreen = ({ navigation }) => {
           text: "Yes",
           onPress: async () => {
             await auth.signOut();
-            navigation.replace('Login'); //skickar tillbaka till login
+            navigation.replace('Login');
           }
         }
       ]
     );
   };
 
+  const renderHunt = ({ item }) => (
+    <View style={styles.huntItem}>
+      <Text style={styles.huntTitle}>{item.title}</Text>
+      <Text>{item.description}</Text>
+      <Text>{item.duration}</Text>
+    </View>
+  );
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Pressable style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>X</Text>
-      </Pressable>
-      <View style={styles.imageContainer}>
-        {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.profileImage} />
-        ) : (
-          <View style={styles.placeholderImage} />
-        )}
-        <Pressable role="button" style={styles.editIcon} onPress={handleChoosePhoto}>
-          <Text style={styles.editIconText}>✎</Text>
-        </Pressable>
-      </View>
+    <FlatList
+      data={plannedHunts}
+      renderItem={renderHunt}
+      keyExtractor={item => item.id}
+      ListHeaderComponent={
+        <>
+          <Pressable style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutButtonText}>X</Text>
+          </Pressable>
+          <View style={styles.imageContainer}>
+            {imageUri ? (
+              <Image source={{ uri: imageUri }} style={styles.profileImage} />
+            ) : (
+              <View style={styles.placeholderImage} />
+            )}
+            <Pressable role="button" style={styles.editIcon} onPress={handleChoosePhoto}>
+              <Text style={styles.editIconText}>✎</Text>
+            </Pressable>
+          </View>
 
-      <Text style={styles.username}>{username || 'Static Username'}</Text>
-      
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Active Hunts</Text>
-        <Text style={styles.sectionTitle}>Planned Hunts</Text>
-      </View>
-   
+          <Text style={styles.username}>{username || 'Static Username'}</Text>
 
-      <Pressable style={styles.createHuntButton} onPress={() => navigation.navigate('CreateHunt')}>
-        <Text style={styles.createHuntButtonText}>Create Hunt</Text>
-      </Pressable>
-      <View style={styles.medalsContainer}>
-        <Text style={styles.medalsTitle}>MEDALS</Text>
-      </View>
-    </ScrollView>
+          {/* rubrikerna Planned Hunts och Active Hunts  */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Planned Hunts</Text>
+            <Text style={styles.sectionTitle}>Active Hunts</Text>
+          </View>
+        </>
+      }
+      ListFooterComponent={
+        <>
+          <Pressable style={styles.createHuntButton} onPress={() => navigation.navigate('CreateHunt')}>
+            <Text style={styles.createHuntButtonText}>Create Hunt</Text>
+          </Pressable>
+
+          <View style={styles.medalsContainer}>
+            <Text style={styles.medalsTitle}>MEDALS</Text>
+          </View>
+        </>
+      }
+      ListEmptyComponent={<Text style={styles.noHuntsText}>You have no planned hunts.</Text>}
+    />
   );
 };
-
-
-
 
 export default ProfileScreen;
