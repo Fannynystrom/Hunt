@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, Pressable, FlatList, Alert } from 'react-native';
 import { useUser } from '../../context/UserContext';
-//import * as ImagePicker from 'react-native-image-picker';
-import { doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db, storage } from '../../firebaseConfig';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, getDownloadURL } from 'firebase/storage';
 import { auth } from '../../firebaseConfig';
 import styles from '../Profile/ProfileScreenStyles';
 import * as ImagePicker from 'expo-image-picker';
-import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
-
+import DefaultProfileImage from '../../assets/ingenProfilbild.png'; 
 
 const ProfileScreen = ({ navigation }) => {
   const { user, username, imageUri: initialImageUri } = useUser();
   const [imageUri, setImageUri] = useState(initialImageUri);
   const [plannedHunts, setPlannedHunts] = useState([]);
   const [activeHunts, setActiveHunts] = useState([]);
+  const [participants, setParticipants] = useState({});
 
   useEffect(() => {
     if (initialImageUri) {
@@ -34,11 +33,43 @@ const ProfileScreen = ({ navigation }) => {
           ...doc.data(),
         }));
         setPlannedHunts(userPlannedHunts);
+        await fetchParticipants(userPlannedHunts); // hämta info från den inbjudna
       } catch (error) {
         console.error('Error fetching planned hunts:', error);
       }
     };
-
+  
+    const fetchParticipants = async (hunts) => {
+      const participantPromises = hunts.flatMap(hunt => 
+        hunt.invitedUsers.map(async (userId) => {
+          const userDoc = await getDoc(doc(db, 'users', userId));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            let avatar = userData.imageUri;
+            if (!avatar) {
+              try {
+                const url = await getDownloadURL(ref(storage, `profilePictures/${userId}`));
+                avatar = url;
+              } catch (error) {
+                if (error.code === 'storage/object-not-found') {
+                  avatar = Image.resolveAssetSource(DefaultProfileImage).uri;
+                }
+              }
+            }
+            return { [userId]: { username: userData.username, avatar } };
+          }
+          return null;
+        })
+      );
+  
+      const participantsArray = await Promise.all(participantPromises);
+      const participantsMap = participantsArray.reduce((acc, participant) => ({ ...acc, ...participant }), {});
+      setParticipants(participantsMap);
+    };
+  
+    fetchPlannedHunts();
+  }, [user.uid]);
+  
     const fetchActiveHunts = async () => {
       try {
         const huntsRef = collection(db, 'hunts');
@@ -54,11 +85,6 @@ const ProfileScreen = ({ navigation }) => {
       }
     };
 
-    fetchPlannedHunts();
-    fetchActiveHunts();
-  }, [user.uid]);
-
-  
 
   const handleChoosePhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -120,11 +146,65 @@ const ProfileScreen = ({ navigation }) => {
     );
   };
 
-  const renderHunt = ({ item }) => (
+ const fetchParticipants = async () => {
+  const participantPromises = plannedHunts.map(async (hunt) => {
+    const participantIds = hunt.participants || [];
+    const participantDataArray = await Promise.all(
+      participantIds.map(async (participantId) => {
+        const participantRef = doc(db, 'users', participantId);
+        const participantSnap = await getDoc(participantRef);
+        if (participantSnap.exists()) {
+          const participantData = participantSnap.data();
+          let avatar = participantData.imageUri;
+          if (!avatar) {
+            try {
+              const url = await getDownloadURL(ref(storage, `profilePictures/${participantId}`));
+              avatar = url;
+            } catch (error) {
+              if (error.code === 'storage/object-not-found') {
+                avatar = Image.resolveAssetSource(DefaultProfileImage).uri;
+              }
+            }
+          }
+          return { [participantId]: { ...participantData, avatar } };
+        }
+        return null;
+      })
+    );
+
+    return participantDataArray.reduce((acc, participant) => {
+      if (participant) {
+        return { ...acc, ...participant };
+      }
+      return acc;
+    }, {});
+  });
+
+  const participantsMapArray = await Promise.all(participantPromises);
+  const participantsMap = participantsMapArray.reduce((acc, map) => ({ ...acc, ...map }), {});
+  setParticipants(participantsMap);
+};
+
+const renderHunt = ({ item }) => {
+  return (
     <View style={styles.huntItem}>
-      <Text style={styles.huntTitle}>{item.title}</Text>
+      {item.invitedUsers && item.invitedUsers.map(userId => {
+        const participant = participants[userId];
+        return (
+          <View key={userId} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5 }}>
+            <Image 
+              source={{ uri: participant?.avatar || Image.resolveAssetSource(DefaultProfileImage).uri }} 
+              style={styles.userAvatar} 
+            />
+            <Text style={styles.huntTitle}>{participant?.username || 'Unknown User'}</Text>
+          </View>
+        );
+      })}
     </View>
   );
+};
+
+
 
   return (
     <FlatList

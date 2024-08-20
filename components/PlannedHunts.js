@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList } from 'react-native';
-import { db } from '../firebaseConfig';
+import { View, Text, FlatList, Image, StyleSheet } from 'react-native';
+import { db, storage } from '../firebaseConfig';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { ref, getDownloadURL } from 'firebase/storage';
 import { useUser } from '../context/UserContext';
+import DefaultProfileImage from '../../assets/ingenProfilbild.png'; // Anta att du har en standardbild
 
 const PlannedHunts = () => {
   const { user } = useUser();
   const [hunts, setHunts] = useState([]);
+  const [participants, setParticipants] = useState({});
 
   useEffect(() => {
     const fetchHunts = async () => {
@@ -19,6 +22,36 @@ const PlannedHunts = () => {
           ...doc.data(),
         }));
         setHunts(userHunts);
+
+        const participantsPromises = userHunts.map(async (hunt) => {
+          const participantRef = doc(db, 'users', hunt.participantId);
+          const participantSnap = await getDoc(participantRef);
+          if (participantSnap.exists()) {
+            const participantData = participantSnap.data();
+            let avatar = participantData.imageUri;
+            if (!avatar) {
+              try {
+                const url = await getDownloadURL(ref(storage, `profilePictures/${hunt.participantId}`));
+                avatar = url;
+              } catch (error) {
+                if (error.code === 'storage/object-not-found') {
+                  avatar = Image.resolveAssetSource(DefaultProfileImage).uri;
+                }
+              }
+            }
+            return { [hunt.participantId]: { ...participantData, avatar } };
+          }
+          return null;
+        });
+
+        const participantsArray = await Promise.all(participantsPromises);
+        const participantsMap = participantsArray.reduce((acc, participant) => {
+          if (participant) {
+            return { ...acc, ...participant };
+          }
+          return acc;
+        }, {});
+        setParticipants(participantsMap);
       } catch (error) {
         console.error('Error fetching planned hunts:', error);
       }
@@ -27,13 +60,15 @@ const PlannedHunts = () => {
     fetchHunts();
   }, [user.uid]);
 
-  const renderHunt = ({ item }) => (
-    <View style={styles.huntItem}>
-      <Text style={styles.huntTitle}>{item.title}</Text>
-      <Text>{item.description}</Text>
-      <Text>{item.duration}</Text>
-    </View>
-  );
+  const renderHunt = ({ item }) => {
+    const participant = participants[item.participantId];
+    return (
+      <View style={styles.huntItem}>
+        <Image source={{ uri: participant?.avatar || Image.resolveAssetSource(DefaultProfileImage).uri }} style={styles.userAvatar} />
+        <Text style={styles.huntTitle}>{participant?.username || 'Unknown User'}</Text>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -49,7 +84,5 @@ const PlannedHunts = () => {
     </View>
   );
 };
-
-
 
 export default PlannedHunts;

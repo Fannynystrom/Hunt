@@ -128,12 +128,27 @@ const styles = StyleSheet.create({
   huntTitle: {
     fontSize: 16,
     fontWeight: 'bold',
+    marginLeft: 10,
   },
   noHuntsText: {
     textAlign: 'center',
     color: '#888',
     marginTop: 20,
   },
+  invitedUserProfileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#007BFF',
+  },
+  userAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  
 });
 
 export default styles;

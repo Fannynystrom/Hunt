@@ -11,6 +11,8 @@ export const UserProvider = ({ children }) => {
   const [imageUri, setImageUri] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const defaultProfileImageUri = 'url_to_default_image'; //standardbild url
+
   useEffect(() => {
     const fetchUserProfile = async (uid) => {
       try {
@@ -31,7 +33,7 @@ export const UserProvider = ({ children }) => {
             } catch (error) {
               if (error.code === 'storage/object-not-found') {
                 console.warn('Profile picture not found, using default image instead');
-                setImageUri(null); 
+                setImageUri(defaultProfileImageUri); 
               } else {
                 throw error;
               }
@@ -39,9 +41,11 @@ export const UserProvider = ({ children }) => {
           }
         } else {
           console.log('No such document!');
+          setImageUri(defaultProfileImageUri); //standardbild
         }
       } catch (error) {
         console.error('Error fetching user profile:', error);
+        setImageUri(defaultProfileImageUri); // standardbild
       }
     };
 
@@ -52,7 +56,7 @@ export const UserProvider = ({ children }) => {
       } else {
         setUser(null);
         setUsername(null);
-        setImageUri(null);
+        setImageUri(defaultProfileImageUri); 
       }
       setIsLoading(false);
     });
