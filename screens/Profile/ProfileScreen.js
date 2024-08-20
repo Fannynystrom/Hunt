@@ -115,8 +115,6 @@ const ProfileScreen = ({ navigation }) => {
   const renderHunt = ({ item }) => (
     <View style={styles.huntItem}>
       <Text style={styles.huntTitle}>{item.title}</Text>
-      <Text>{item.description}</Text>
-      <Text>{item.duration}</Text>
     </View>
   );
 
