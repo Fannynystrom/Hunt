@@ -23,6 +23,11 @@ const styles = StyleSheet.create({
   imageContainer: {
     position: 'relative',
     marginBottom: 20,
+    marginTop: 10,
+    //backgroundColor: '#ccc',
+    alignItems: 'center',
+
+
   },
   profileImage: {
     width: 250,
@@ -41,12 +46,14 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#007BFF',
   },
+
+
   editIcon: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
+    bottom: 10, // Justerat för att vara lite ovanför botten
+    right: 10,  // Justerat för att vara lite innanför kanten
     backgroundColor: '#007BFF',
-    borderRadius: 40,
+    borderRadius: 35,
     width: 70,
     height: 70,
     justifyContent: 'center',
@@ -54,6 +61,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#fff',
   },
+
   editIconText: {
     color: '#fff',
     fontSize: 28,
@@ -64,6 +72,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+
+
+  //rubrikerna planned o active hunts
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-around', 
@@ -71,7 +82,7 @@ const styles = StyleSheet.create({
     width: '100%', 
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: 'bold',
     color: '#007BFF',
     textAlign: 'center',
@@ -87,7 +98,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 60,
     marginLeft: 20,
-    alignSelf: 'center',
+    alignSelf: 'flex-start',
   },
   createHuntButtonText: {
     color: '#fff',

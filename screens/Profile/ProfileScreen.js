@@ -55,19 +55,45 @@ const ProfileScreen = ({ navigation }) => {
     fetchActiveHunts();
   }, [user.uid]);
 
-  const handleChoosePhoto = async () => {
-    const result = await ImagePicker.launchImageLibrary({
-      mediaType: 'photo',
-      quality: 1,
-    });
-
-    if (result.didCancel) return;
-
-    if (result.assets && result.assets.length > 0) {
-      const uri = result.assets[0].uri;
-      setImageUri(uri);
-      await uploadImageToStorage(uri);
-    }
+  const handleChoosePhoto = () => {
+    Alert.alert(
+      "Choose an option",
+      "Select a source for your profile picture",
+      [
+        {
+          text: "Choose from library",
+          onPress: async () => {
+            const result = await ImagePicker.launchImageLibrary({
+              mediaType: 'photo',
+              quality: 1,
+            });
+            if (!result.didCancel && result.assets && result.assets.length > 0) {
+              const uri = result.assets[0].uri;
+              setImageUri(uri);
+              await uploadImageToStorage(uri);
+            }
+          },
+        },
+        {
+          text: "Take a photo",
+          onPress: async () => {
+            const result = await ImagePicker.launchCamera({
+              mediaType: 'photo',
+              quality: 1,
+            });
+            if (!result.didCancel && result.assets && result.assets.length > 0) {
+              const uri = result.assets[0].uri;
+              setImageUri(uri);
+              await uploadImageToStorage(uri);
+            }
+          },
+        },
+        {
+          text: "Cancel",
+          style: "cancel"
+        }
+      ]
+    );
   };
 
   const uploadImageToStorage = async (uri) => {
@@ -141,7 +167,6 @@ const ProfileScreen = ({ navigation }) => {
 
           <Text style={styles.username}>{username || 'Static Username'}</Text>
 
-          {/* rubrikerna Planned Hunts och Active Hunts  */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Planned Hunts</Text>
             <Text style={styles.sectionTitle}>Active Hunts</Text>
