@@ -58,13 +58,7 @@ const CreateHuntScreen = ({ navigation }) => {
         onChangeText={setTitle}
       />
       
-      <Text style={styles.inputLabel}>Description</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Describe your hunt"
-        value={description}
-        onChangeText={setDescription}
-      />
+    
 
       <Text style={styles.imageLabel}>Insert image</Text>
       <Pressable style={styles.imageContainer} onPress={handleChoosePhoto}>
