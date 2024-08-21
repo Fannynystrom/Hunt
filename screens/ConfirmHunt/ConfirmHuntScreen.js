@@ -65,36 +65,43 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
+  //confirm hunt header
   header: {
-    fontSize: 24,
+    fontSize: 37,
     fontWeight: 'bold',
     textAlign: 'center',
+    marginBottom: 20,
   },
+  //"du valde"
   subHeader: {
-    fontSize: 16,
+    fontSize: 17,
     textAlign: 'center',
-    marginVertical: 10,
+    marginVertical: 5,
+    color: '#6a0dad',
   },
   huntTitle: {
-    fontSize: 20,
+    fontSize: 22,
     textAlign: 'center',
     fontWeight: 'bold',
     marginBottom: 20,
   },
   routeHeader: {
-    fontSize: 16,
+    fontSize: 17,
     textAlign: 'center',
     marginBottom: 10,
+    color: '#6a0dad',
+
   },
   map: {
     width: '100%',
-    height: 300,
+    height: 400,
     marginBottom: 20,
   },
   estimatedTime: {
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
+    marginTop: 20,
   },
   confirmButton: {
     backgroundColor: '#007BFF',
