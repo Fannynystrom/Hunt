@@ -1,11 +1,10 @@
 import { StyleSheet } from 'react-native';
 
-
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     justifyContent: 'flex-start',
-    alignItems: 'center',
+    //alignItems: 'center',
     padding: 20,
     backgroundColor: '#fff',
   },
@@ -24,10 +23,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: 20,
     marginTop: 10,
-    //backgroundColor: '#ccc',
     alignItems: 'center',
-
-
   },
   profileImage: {
     width: 250,
@@ -46,7 +42,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#007BFF',
   },
-
   editIcon: {
     position: 'absolute',
     bottom: 10, 
@@ -60,34 +55,63 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#fff',
   },
-  
-
   editIconText: {
     color: '#fff',
     fontSize: 28,
     fontWeight: 'bold',
   },
-
-
   username: {
     fontSize: 34,
     fontWeight: 'bold',
     textAlign: 'center',
   },
 
-
-  //rubrikerna planned o active hunts
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-around', 
-    marginTop: 20,
-    width: '100%', 
+  // behållaren för Planned Hunts och Active Hunts
+  huntsContainer: {
+    width: '100%',  
+    marginTop: 20,  
   },
+
+  // rubrikerna Planned Hunts och Active Hunts
   sectionTitle: {
     fontSize: 19,
     fontWeight: 'bold',
     color: '#007BFF',
+    textAlign: 'left',  
+    marginBottom: 10,  
+  },
+
+  // Stil för varje "hunt" objekt
+  huntItem: {
+    flexDirection: 'row',  
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+  },
+  huntTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'left',  
+  },
+  userAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  noHuntsText: {
     textAlign: 'center',
+    color: '#888',
+    marginTop: 20,
+  },
+  invitedUserProfileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#007BFF',
   },
   createHuntButton: {
     backgroundColor: '#007BFF',
@@ -120,35 +144,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#007BFF',
   },
-  huntItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  huntTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 10,
-  },
-  noHuntsText: {
-    textAlign: 'center',
-    color: '#888',
-    marginTop: 20,
-  },
-  invitedUserProfileImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#007BFF',
-  },
-  userAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 10,
-  },
-  
 });
 
 export default styles;

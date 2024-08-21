@@ -55,7 +55,7 @@ const MapScreen = ({ route, navigation }) => {
       await addDoc(huntsRef, newHunt);
       console.log('Hunt saved successfully!');
       alert('Hunt created successfully!');
-      navigation.goBack(); // tills ja skapat nästa sida
+      navigation.navigate('Profile');
     } catch (error) {
       console.error('Error saving hunt:', error);
     }
