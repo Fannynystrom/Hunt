@@ -1,47 +1,74 @@
-// components/ActiveHunts.js
-
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, Text, Pressable } from 'react-native';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { View, FlatList, Text, Image, Pressable } from 'react-native';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { db, storage } from '../firebaseConfig';
 import { useUser } from '../context/UserContext';
-import styles from '../screens/Profile/ProfileScreenStyles';  // Uppdaterad sökväg
+import styles from '../screens/Profile/ProfileScreenStyles'; 
+import DefaultProfileImage from '../assets/ingenProfilbild.png';
 
 const ActiveHunts = ({ navigation }) => {
   const { user } = useUser();
   const [activeHunts, setActiveHunts] = useState([]);
+  const [creators, setCreators] = useState({});
 
   useEffect(() => {
     const fetchActiveHunts = async () => {
       try {
         const huntsRef = collection(db, 'hunts');
-        const activeQuery = query(
-          huntsRef,
-          where('invitedUsers', 'array-contains', user.uid),
-          where('createdBy', '!=', user.uid)
-        );
+        const activeQuery = query(huntsRef, where('invitedUsers', 'array-contains', user.uid));
         const querySnapshot = await getDocs(activeQuery);
         const userActiveHunts = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         }));
         setActiveHunts(userActiveHunts);
+        await fetchCreators(userActiveHunts);
       } catch (error) {
         console.error('Error fetching active hunts:', error);
       }
     };
-  
+
+    const fetchCreators = async (hunts) => {
+      const creatorPromises = hunts.map(async (hunt) => {
+        const creatorDoc = await getDoc(doc(db, 'users', hunt.createdBy));
+        if (creatorDoc.exists()) {
+          const creatorData = creatorDoc.data();
+          let avatar = creatorData.imageUri;
+          if (!avatar) {
+            try {
+              const url = await getDownloadURL(ref(storage, `profilePictures/${hunt.createdBy}`));
+              avatar = url;
+            } catch (error) {
+              if (error.code === 'storage/object-not-found') {
+                avatar = Image.resolveAssetSource(DefaultProfileImage).uri;
+              }
+            }
+          }
+          return { [hunt.createdBy]: { username: creatorData.username, avatar } };
+        }
+        return null;
+      });
+
+      const creatorsArray = await Promise.all(creatorPromises);
+      const creatorsMap = creatorsArray.reduce((acc, creator) => ({ ...acc, ...creator }), {});
+      setCreators(creatorsMap);
+    };
+
     fetchActiveHunts();
   }, [user.uid]);
-  
 
   const renderHunt = ({ item }) => {
+    const creator = creators[item.createdBy];
     return (
       <Pressable 
         style={styles.huntItem}
         onPress={() => navigation.navigate('ConfirmHunt', { huntId: item.id })}
       >
-        <Text style={styles.huntTitle}>{item.title}</Text>
+        <Image 
+          source={{ uri: creator?.avatar || Image.resolveAssetSource(DefaultProfileImage).uri }} 
+          style={styles.userAvatar} 
+        />
+        <Text style={styles.huntTitle}>{item.title || 'Untitled Hunt'}</Text>
       </Pressable>
     );
   };
