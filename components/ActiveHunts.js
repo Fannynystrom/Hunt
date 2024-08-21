@@ -1,9 +1,11 @@
+// components/ActiveHunts.js
+
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, Text, Pressable } from 'react-native';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { useUser } from '../context/UserContext';
-import styles from '../screens/Profile/ProfileScreenStyles';
+import styles from '../screens/Profile/ProfileScreenStyles';  // Uppdaterad sökväg
 
 const ActiveHunts = ({ navigation }) => {
   const { user } = useUser();
@@ -23,7 +25,6 @@ const ActiveHunts = ({ navigation }) => {
           id: doc.id,
           ...doc.data(),
         }));
-        console.log("Active Hunts:", userActiveHunts);  
         setActiveHunts(userActiveHunts);
       } catch (error) {
         console.error('Error fetching active hunts:', error);
@@ -32,30 +33,26 @@ const ActiveHunts = ({ navigation }) => {
   
     fetchActiveHunts();
   }, [user.uid]);
-
+  
 
   const renderHunt = ({ item }) => {
-    console.log("Rendering Hunt:", item);
     return (
       <Pressable 
-        style={[styles.huntItem, { backgroundColor: '#f0f0f0' }]} //bakgrund runt active i profile
+        style={styles.huntItem}
         onPress={() => navigation.navigate('ConfirmHunt', { huntId: item.id })}
       >
-        <Text style={[styles.huntTitle, { color: 'black' }]}>{item.title}</Text>
+        <Text style={styles.huntTitle}>{item.title}</Text>
       </Pressable>
     );
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <Text style={{ color: 'black', fontSize: 18, marginBottom: 10 }}>Rendering Active Hunts List</Text>
-      <FlatList
-        data={activeHunts}
-        renderItem={renderHunt}
-        keyExtractor={item => item.id}
-        ListEmptyComponent={<Text style={{ color: 'black' }}>You have no active hunts.</Text>}
-      />
-    </View>
+    <FlatList
+      data={activeHunts}
+      renderItem={renderHunt}
+      keyExtractor={item => item.id}
+      ListEmptyComponent={<Text style={styles.noHuntsText}>You have no active hunts.</Text>}
+    />
   );
 };
 
