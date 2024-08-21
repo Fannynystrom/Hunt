@@ -8,14 +8,14 @@ import PlannedHunts from '../../components/PlannedHunts';
 import ActiveHunts from '../../components/ActiveHunts';
 
 const ProfileScreen = ({ navigation }) => {
-  const { user, username, imageUri: initialImageUri } = useUser();
-  const [imageUri, setImageUri] = useState(initialImageUri);
+  const { user, username, imageUri, isLoading } = useUser();
+  const [imageUriState, setImageUriState] = useState(imageUri);
 
   useEffect(() => {
-    if (initialImageUri) {
-      setImageUri(initialImageUri);
+    if (imageUri) {
+      setImageUriState(imageUri);
     }
-  }, [initialImageUri]);
+  }, [imageUri]);
 
   const handleChoosePhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -30,7 +30,7 @@ const ProfileScreen = ({ navigation }) => {
     });
 
     if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
+      setImageUriState(result.assets[0].uri);
       await uploadImageToStorage(result.assets[0].uri);
     }
   };
@@ -77,6 +77,14 @@ const ProfileScreen = ({ navigation }) => {
     );
   };
 
+  if (isLoading) {
+    return <Text>Loading...</Text>; //kontroll för logout
+  }
+
+  if (!user) {
+    return null; 
+  }
+
   const sections = [
     {
       title: '',
@@ -88,8 +96,8 @@ const ProfileScreen = ({ navigation }) => {
           </Pressable>
 
           <View style={styles.imageContainer}>
-            {imageUri ? (
-              <Image source={{ uri: imageUri }} style={styles.profileImage} />
+            {imageUriState ? (
+              <Image source={{ uri: imageUriState }} style={styles.profileImage} />
             ) : (
               <View style={styles.placeholderImage} />
             )}
