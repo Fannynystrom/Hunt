@@ -70,7 +70,7 @@ const PlannedHunts = () => {
                 source={{ uri: participant?.avatar || Image.resolveAssetSource(DefaultProfileImage).uri }} 
                 style={styles.userAvatar} 
               />
-              <Text style={styles.huntTitle}>{participant?.username || 'Unknown User'}</Text>
+        <Text style={styles.huntTitle}>{item.title || 'Untitled Hunt'}</Text>
             </View>
           );
         })}
