@@ -78,45 +78,58 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   const sections = [
+    {
+      title: '',
+      data: [{}],
+      renderItem: () => (
+        <>
+          <Pressable style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutButtonText}>X</Text>
+          </Pressable>
+
+          <View style={styles.imageContainer}>
+            {imageUri ? (
+              <Image source={{ uri: imageUri }} style={styles.profileImage} />
+            ) : (
+              <View style={styles.placeholderImage} />
+            )}
+            <Pressable role="button" style={styles.editIcon} onPress={handleChoosePhoto}>
+              <Text style={styles.editIconText}>✎</Text>
+            </Pressable>
+          </View>
+
+          <Text style={styles.username}>{username || 'Static Username'}</Text>
+        </>
+      ),
+    },
     { title: 'Planned Hunts', data: [{}], renderItem: () => <PlannedHunts /> },
     { title: 'Active Hunts', data: [{}], renderItem: () => <ActiveHunts navigation={navigation} /> },
+    {
+      title: '',
+      data: [{}],
+      renderItem: () => (
+        <>
+          <Pressable style={styles.createHuntButton} onPress={() => navigation.navigate('CreateHunt')}>
+            <Text style={styles.createHuntButtonText}>Create Hunt</Text>
+          </Pressable>
+
+          <View style={styles.medalsContainer}>
+            <Text style={styles.medalsTitle}>MEDALS</Text>
+          </View>
+        </>
+      ),
+    },
   ];
 
   return (
-    <View style={styles.container}>
-      <Pressable style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>X</Text>
-      </Pressable>
-
-      <View style={styles.imageContainer}>
-        {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.profileImage} />
-        ) : (
-          <View style={styles.placeholderImage} />
-        )}
-        <Pressable role="button" style={styles.editIcon} onPress={handleChoosePhoto}>
-          <Text style={styles.editIconText}>✎</Text>
-        </Pressable>
-      </View>
-
-      <Text style={styles.username}>{username || 'Static Username'}</Text>
-
-      <SectionList
-        sections={sections}
-        keyExtractor={(item, index) => item + index}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.sectionTitle}>{title}</Text>
-        )}
-      />
-
-      <Pressable style={styles.createHuntButton} onPress={() => navigation.navigate('CreateHunt')}>
-        <Text style={styles.createHuntButtonText}>Create Hunt</Text>
-      </Pressable>
-
-      <View style={styles.medalsContainer}>
-        <Text style={styles.medalsTitle}>MEDALS</Text>
-      </View>
-    </View>
+    <SectionList
+      sections={sections}
+      keyExtractor={(item, index) => item + index}
+      renderSectionHeader={({ section: { title } }) =>
+        title ? <Text style={styles.sectionTitle}>{title}</Text> : null
+      }
+      contentContainerStyle={styles.container} 
+    />
   );
 };
 
