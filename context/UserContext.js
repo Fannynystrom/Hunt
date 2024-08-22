@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth, db, storage } from '../firebaseConfig';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { ref, getDownloadURL } from 'firebase/storage';
+import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 
 const UserContext = createContext();
 
@@ -11,7 +11,7 @@ export const UserProvider = ({ children }) => {
   const [imageUri, setImageUri] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const defaultProfileImageUri = 'url_to_default_image'; //standardbild url
+  const defaultProfileImageUri = 'url_to_default_image';
 
   useEffect(() => {
     const fetchUserProfile = async (uid) => {
@@ -33,7 +33,7 @@ export const UserProvider = ({ children }) => {
             } catch (error) {
               if (error.code === 'storage/object-not-found') {
                 console.warn('Profile picture not found, using default image instead');
-                setImageUri(defaultProfileImageUri); 
+                setImageUri(defaultProfileImageUri);
               } else {
                 throw error;
               }
@@ -41,11 +41,11 @@ export const UserProvider = ({ children }) => {
           }
         } else {
           console.log('No such document!');
-          setImageUri(defaultProfileImageUri); //standardbild
+          setImageUri(defaultProfileImageUri); 
         }
       } catch (error) {
         console.error('Error fetching user profile:', error);
-        setImageUri(defaultProfileImageUri); // standardbild
+        setImageUri(defaultProfileImageUri); 
       }
     };
 
@@ -56,13 +56,27 @@ export const UserProvider = ({ children }) => {
       } else {
         setUser(null);
         setUsername(null);
-        setImageUri(defaultProfileImageUri); 
+        setImageUri(defaultProfileImageUri);
       }
       setIsLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
+
+  const uploadImageToStorage = async (uri) => {
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const storageRef = ref(storage, `profilePictures/${user.uid}`);
+      await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(storageRef);
+      await saveImageUriToFirestore(user.uid, downloadURL);
+      setImageUri(downloadURL); 
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
 
   const saveImageUriToFirestore = async (uid, uri) => {
     try {
@@ -74,7 +88,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, username, imageUri, isLoading }}>
+    <UserContext.Provider value={{ user, username, imageUri, isLoading, uploadImageToStorage }}>
       {children}
     </UserContext.Provider>
   );

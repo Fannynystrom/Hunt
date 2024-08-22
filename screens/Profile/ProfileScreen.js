@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, Pressable, SectionList, Alert } from 'react-native';
 import { useUser } from '../../context/UserContext';
-import { auth } from '../../firebaseConfig';
+import { auth, storage, db } from '../../firebaseConfig';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
+import { doc, setDoc } from 'firebase/firestore';
 import styles from '../Profile/ProfileScreenStyles';
 import * as ImagePicker from 'expo-image-picker';
 import PlannedHunts from '../../components/PlannedHunts';
@@ -9,11 +11,11 @@ import ActiveHunts from '../../components/ActiveHunts';
 
 const ProfileScreen = ({ navigation }) => {
   const { user, username, imageUri, isLoading } = useUser();
-  const [imageUriState, setImageUriState] = useState(imageUri);
+  const [localImageUri, setLocalImageUri] = useState(imageUri);
 
   useEffect(() => {
     if (imageUri) {
-      setImageUriState(imageUri);
+      setLocalImageUri(imageUri);
     }
   }, [imageUri]);
 
@@ -30,8 +32,9 @@ const ProfileScreen = ({ navigation }) => {
     });
 
     if (!result.canceled) {
-      setImageUriState(result.assets[0].uri);
-      await uploadImageToStorage(result.assets[0].uri);
+      const selectedUri = result.assets[0].uri;
+      setLocalImageUri(selectedUri);
+      await uploadImageToStorage(selectedUri);
     }
   };
 
@@ -78,11 +81,11 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   if (isLoading) {
-    return <Text>Loading...</Text>; //kontroll för logout
+    return <Text>Loading...</Text>; 
   }
 
   if (!user) {
-    return null; 
+    return null;
   }
 
   const sections = [
@@ -96,8 +99,8 @@ const ProfileScreen = ({ navigation }) => {
           </Pressable>
 
           <View style={styles.imageContainer}>
-            {imageUriState ? (
-              <Image source={{ uri: imageUriState }} style={styles.profileImage} />
+            {localImageUri ? (
+              <Image source={{ uri: localImageUri }} style={styles.profileImage} />
             ) : (
               <View style={styles.placeholderImage} />
             )}
