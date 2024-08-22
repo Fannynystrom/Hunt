@@ -12,6 +12,7 @@ import InviteScreen from '../screens/Invite/InviteScreen';
 import ConfirmHuntScreen from '../screens/ConfirmHunt/ConfirmHuntScreen';
 import CreateHuntScreen from '../screens/Hunt/CreateHuntScreen';
 import MapScreen from '../screens/Map/MapScreen'; 
+import NavigateMapScreen from '../screens/Map/NavigateMapScreen'; 
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -37,6 +38,8 @@ function AppNavigator() {
         <Stack.Screen name="ConfirmHunt" component={ConfirmHuntScreen} options={{ title: 'Confirm Hunt' }} />
         <Stack.Screen name="CreateHunt" component={CreateHuntScreen} options={{ title: 'Create Hunt' }} />
         <Stack.Screen name="MapScreen" component={MapScreen} options={{ title: 'Select Location' }} /> 
+        <Stack.Screen name="NavigateMapScreen" component={NavigateMapScreen} options={{ title: 'Navigate Location' }} /> 
+
 
       </Stack.Navigator>
     </NavigationContainer>

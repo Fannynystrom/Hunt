@@ -27,12 +27,12 @@ const ConfirmHuntScreen = ({ navigation }) => {
   }
 
   const handleConfirm = () => {
-    navigation.navigate('MapScreen', { 
-      huntId, 
-      huntTitle: hunt.title, 
-      huntLocation: hunt.location //skickar huntlocation till mapscreen
+    navigation.navigate('NavigateMapScreen', { 
+      huntLocation: hunt.location, //skickar platsen här
+      huntTitle: hunt.title 
     });
   };
+  
   
 
   return (

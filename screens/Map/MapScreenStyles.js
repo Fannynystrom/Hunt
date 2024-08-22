@@ -32,4 +32,12 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  cameraButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: 'blue',
+    borderRadius: 50,
+    padding: 15,
+  },
 });
