@@ -7,10 +7,9 @@ import { db, auth } from '../../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 
 const MapScreen = ({ route, navigation }) => {
-  const { selectedUsers, title, description, duration, imageUri } = route.params;
+  const { selectedUsers, title, description, duration, imageUri, huntLocation } = route.params;
 
   const [location, setLocation] = useState(null);
-  const [marker, setMarker] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -30,50 +29,18 @@ const MapScreen = ({ route, navigation }) => {
     })();
   }, []);
 
-  const saveHunt = async () => {
-    if (!marker) {
-      alert('Please place a marker on the map to select a location.');
-      return;
-    }
-
-    try {
-      const huntsRef = collection(db, 'hunts');
-      const newHunt = {
-        title,
-        description,
-        duration,
-        imageUri,
-        location: {
-          latitude: marker.coordinate.latitude,
-          longitude: marker.coordinate.longitude,
-        },
-        createdBy: auth.currentUser.uid,
-        invitedUsers: selectedUsers,
-        createdAt: new Date(),
-      };
-      
-      await addDoc(huntsRef, newHunt);
-      console.log('Hunt saved successfully!');
-      alert('Hunt created successfully!');
-      navigation.navigate('Profile');
-    } catch (error) {
-      console.error('Error saving hunt:', error);
-    }
-  };
-
-  const handlePress = (event) => {
-    const coordinate = event.nativeEvent.coordinate;
-    setMarker({ coordinate });
-  };
-
   return (
     <View style={styles.container}>
       {location && (
         <>
           <MapView
             style={styles.map}
-            initialRegion={location}
-            onPress={handlePress}
+            initialRegion={{
+              latitude: huntLocation.latitude,
+              longitude: huntLocation.longitude,
+              latitudeDelta: 0.05,
+              longitudeDelta: 0.05,
+            }}
           >
             <Circle
               center={location}
@@ -81,14 +48,11 @@ const MapScreen = ({ route, navigation }) => {
               strokeColor="rgba(0, 0, 255, 0.5)"
               fillColor="rgba(0, 0, 255, 0.2)"
             />
-            {marker && (
-              <Marker coordinate={marker.coordinate} />
-            )}
+            <Marker coordinate={huntLocation} />
           </MapView>
 
-          {/* knappen för att skapa */}
-          <Pressable style={styles.createHuntButton} onPress={saveHunt}>
-            <Text style={styles.createHuntButtonText}>HistoryHunt</Text>
+          <Pressable style={styles.createHuntButton} onPress={() => navigation.navigate('Profile')}>
+            <Text style={styles.createHuntButtonText}>Return to Profile</Text>
           </Pressable>
         </>
       )}

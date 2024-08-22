@@ -26,6 +26,15 @@ const ConfirmHuntScreen = ({ navigation }) => {
     return <Text>Loading...</Text>;
   }
 
+  const handleConfirm = () => {
+    navigation.navigate('MapScreen', { 
+      huntId, 
+      huntTitle: hunt.title, 
+      huntLocation: hunt.location //skickar huntlocation till mapscreen
+    });
+  };
+  
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Confirm Hunt</Text>
@@ -52,7 +61,7 @@ const ConfirmHuntScreen = ({ navigation }) => {
       </MapView>
       
       <Text style={styles.estimatedTime}>This should take approximately: {hunt.duration}</Text>
-      <Pressable style={styles.confirmButton} onPress={() => navigation.navigate('Profile')}>
+      <Pressable style={styles.confirmButton} onPress={handleConfirm}>
         <Text style={styles.confirmButtonText}>CONFIRM</Text>
       </Pressable>
     </View>
