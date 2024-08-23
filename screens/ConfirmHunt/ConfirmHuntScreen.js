@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
@@ -27,13 +27,15 @@ const ConfirmHuntScreen = ({ navigation }) => {
   }
 
   const handleConfirm = () => {
-    navigation.navigate('NavigateMapScreen', { 
-      huntLocation: hunt.location, //skickar platsen här
-      huntTitle: hunt.title 
-    });
+    if (hunt.locations && hunt.locations.length > 0) {
+      navigation.navigate('NavigateMapScreen', {
+        huntLocations: hunt.locations, 
+        huntTitle: hunt.title,
+      });
+    } else {
+      Alert.alert('Error', 'Location data is missing for this hunt.');
+    }
   };
-  
-  
 
   return (
     <View style={styles.container}>
@@ -42,25 +44,28 @@ const ConfirmHuntScreen = ({ navigation }) => {
       <Text style={styles.huntTitle}>{hunt.title}</Text>
       <Text style={styles.routeHeader}>Here is the route you will be taking:</Text>
       
-      <MapView 
-        style={styles.map}
-        initialRegion={{
-          latitude: hunt.location.latitude,
-          longitude: hunt.location.longitude,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
-        }}
-      >
-        <Marker
-          coordinate={hunt.location}
-          title={hunt.title}
-        />
-        {hunt.locations?.map((location, index) => (
-          <Marker key={index} coordinate={location} />
-        ))}
-      </MapView>
-      
-      <Text style={styles.estimatedTime}>This should take approximately: {hunt.duration}</Text>
+      {/* Kolla om locations finns innan kartan renderas */}
+      {hunt.locations ? (
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: hunt.locations[0].latitude,
+            longitude: hunt.locations[0].longitude,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05,
+          }}
+        >
+          {hunt.locations.map((location, index) => (
+            <Marker key={index} coordinate={location} />
+          ))}
+        </MapView>
+      ) : (
+        <Text>No location data available.</Text>
+      )}
+
+      <Text style={styles.estimatedTime}>
+        This should take approximately: {hunt.duration}
+      </Text>
       <Pressable style={styles.confirmButton} onPress={handleConfirm}>
         <Text style={styles.confirmButtonText}>CONFIRM</Text>
       </Pressable>
@@ -74,14 +79,12 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
-  //confirm hunt header
   header: {
     fontSize: 37,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
   },
-  //"du valde"
   subHeader: {
     fontSize: 17,
     textAlign: 'center',
@@ -99,7 +102,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
     color: '#6a0dad',
-
   },
   map: {
     width: '100%',

@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import styles from './MapScreenStyles';
 
 const NavigateMapScreen = ({ route, navigation }) => {
-  const { huntLocation, huntTitle } = route.params;
+  const { huntLocations, huntTitle } = route.params;
   const [userLocation, setUserLocation] = useState(null);
 
   useEffect(() => {
@@ -40,7 +40,9 @@ const NavigateMapScreen = ({ route, navigation }) => {
             initialRegion={userLocation}
             showsUserLocation={true}
           >
-            <Marker coordinate={huntLocation} title={huntTitle} />
+            {huntLocations.map((location, index) => (
+              <Marker key={index} coordinate={location} title={huntTitle} />
+            ))}
           </MapView>
 
           <Pressable style={styles.cameraButton} onPress={handleTakePhoto}>
