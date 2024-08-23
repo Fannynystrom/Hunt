@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, Alert } from 'react-native';
+import { View, Text, Pressable, Alert, Modal } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
@@ -11,6 +11,8 @@ const NavigateMapScreen = ({ route, navigation }) => {
     const { huntLocations, huntTitle } = route.params;
     const [userLocation, setUserLocation] = useState(null);
     const [photoUri, setPhotoUri] = useState(null);
+    const [visitedLocations, setVisitedLocations] = useState(0);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -44,9 +46,12 @@ const NavigateMapScreen = ({ route, navigation }) => {
 
         if (!result.canceled) {
             setPhotoUri(result.assets[0].uri);
-            Alert.alert('Photo Taken', 'Photo was successfully taken!');
+            setVisitedLocations(visitedLocations + 1);
+            setIsModalVisible(true); // visar bilden efter den tagits
         }
     };
+
+    const remainingLocations = huntLocations.length - visitedLocations;
 
     return (
         <View style={styles.container}>
@@ -66,12 +71,30 @@ const NavigateMapScreen = ({ route, navigation }) => {
                         <Ionicons name="camera" size={40} color="white" />
                     </Pressable>
 
-                    {photoUri && (
-                        <View style={{ marginTop: 20, alignItems: 'center' }}>
-                            <Image source={{ uri: photoUri }} style={{ width: 200, height: 200 }} />
-                            <Text>{'1/3'}</Text> 
+                    {/* förhandsvisning av bilden */}
+                    <Modal
+                        transparent={true}
+                        visible={isModalVisible}
+                        onRequestClose={() => setIsModalVisible(false)}
+                    >
+                        <View style={styles.overlay}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalHeader}>NICE!</Text>
+                                {photoUri && (
+                                    <Image source={{ uri: photoUri }} style={styles.previewImage} />
+                                )}
+                                <Text style={styles.taskText}>
+                                    You've completed {visitedLocations}/{huntLocations.length} tasks
+                                </Text>
+                                <Pressable
+                                    style={styles.continueButton}
+                                    onPress={() => setIsModalVisible(false)}
+                                >
+                                    <Text style={styles.continueButtonText}>CONTINUE</Text>
+                                </Pressable>
+                            </View>
                         </View>
-                    )}
+                    </Modal>
                 </>
             )}
         </View>
@@ -79,3 +102,4 @@ const NavigateMapScreen = ({ route, navigation }) => {
 };
 
 export default NavigateMapScreen;
+
