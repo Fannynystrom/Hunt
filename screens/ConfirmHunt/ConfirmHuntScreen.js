@@ -28,14 +28,18 @@ const ConfirmHuntScreen = ({ navigation }) => {
 
   const handleConfirm = () => {
     if (hunt.locations && hunt.locations.length > 0) {
-      navigation.navigate('NavigateMapScreen', {
-        huntLocations: hunt.locations, 
-        huntTitle: hunt.title,
-      });
+        navigation.navigate('NavigateMapScreen', {
+            huntId: route.params.huntId, 
+            huntLocations: hunt.locations, 
+            huntTitle: hunt.title,
+        });
     } else {
-      Alert.alert('Error', 'Location data is missing for this hunt.');
+        Alert.alert('Error', 'Location data is missing for this hunt.');
     }
-  };
+};
+
+
+
 
   return (
     <View style={styles.container}>
@@ -44,7 +48,6 @@ const ConfirmHuntScreen = ({ navigation }) => {
       <Text style={styles.huntTitle}>{hunt.title}</Text>
       <Text style={styles.routeHeader}>Here is the route you will be taking:</Text>
       
-      {/* Kolla om locations finns innan kartan renderas */}
       {hunt.locations ? (
         <MapView
           style={styles.map}

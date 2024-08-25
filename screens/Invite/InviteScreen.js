@@ -86,6 +86,7 @@ const InviteScreen = ({ navigation, route }) => {
     });
   };
   
+  
   const renderUserItem = ({ item }) => {
     const isSelected = selectedUsers.includes(item.id);
     return (

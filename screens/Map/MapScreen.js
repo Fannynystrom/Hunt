@@ -30,36 +30,50 @@ const MapScreen = ({ route, navigation }) => {
     })();
   }, []);
 
-  const saveHunt = async () => {
-    if (markers.length === 0) {
+
+const saveHunt = async () => {
+  if (markers.length === 0) {
       alert('Please place at least one marker on the map to select locations.');
       return;
-    }
+  }
 
-    try {
+  try {
       const huntsRef = collection(db, 'hunts');
       const newHunt = {
-        title,
-        description,
-        duration,
-        imageUri,
-        locations: markers.map(marker => ({
-          latitude: marker.latitude,
-          longitude: marker.longitude,
-        })),
-        createdBy: auth.currentUser.uid,
-        invitedUsers: selectedUsers,
-        createdAt: new Date(),
+          title,
+          description,
+          duration,
+          imageUri,
+          locations: markers.map(marker => ({
+              latitude: marker.latitude,
+              longitude: marker.longitude,
+          })),
+          createdBy: auth.currentUser.uid,
+          invitedUsers: selectedUsers,
+          createdAt: new Date(),
+          status: 'active',
       };
-      
-      await addDoc(huntsRef, newHunt);
-      console.log('Hunt saved successfully!');
+
+      // Spara jakten och få `huntId`
+      const huntDoc = await addDoc(huntsRef, newHunt);
+      const createdHuntId = huntDoc.id;
+
+      console.log('Hunt saved successfully with ID:', createdHuntId);
       alert('Hunt created successfully!');
-      navigation.navigate('Profile');
-    } catch (error) {
+
+      navigation.navigate('Profile', {
+          huntId: createdHuntId, 
+          huntTitle: title,
+          huntLocations: newHunt.locations
+      });
+  } catch (error) {
       console.error('Error saving hunt:', error);
-    }
-  };
+  }
+};
+
+
+
+
 
   const handlePress = (event) => {
     const coordinate = event.nativeEvent.coordinate;
@@ -86,7 +100,6 @@ const MapScreen = ({ route, navigation }) => {
             ))}
           </MapView>
 
-          {/* Knappen för att spara jakten */}
           <Pressable style={styles.createHuntButton} onPress={saveHunt}>
             <Text style={styles.createHuntButtonText}>Save Hunt</Text>
           </Pressable>

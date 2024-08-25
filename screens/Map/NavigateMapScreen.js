@@ -6,16 +6,22 @@ import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './MapScreenStyles';
 import { Image } from 'expo-image';
+import { doc, updateDoc, setDoc } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
+import { useUser } from '../../context/UserContext';
 
 const NavigateMapScreen = ({ route, navigation }) => {
-    const { huntLocations, huntTitle } = route.params;
+    const { huntLocations, huntTitle, huntId, onHuntComplete } = route.params;
+    console.log('NavigateMapScreen route.params:', route.params);
+
     const [userLocation, setUserLocation] = useState(null);
     const [photoUri, setPhotoUri] = useState(null);
     const [visitedLocations, setVisitedLocations] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const { user } = useUser();
 
     useEffect(() => {
-        (async () => {
+        const fetchLocation = async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 alert('Permission to access location was denied');
@@ -29,7 +35,9 @@ const NavigateMapScreen = ({ route, navigation }) => {
                 latitudeDelta: 0.005,
                 longitudeDelta: 0.005,
             });
-        })();
+        };
+
+        fetchLocation();
     }, []);
 
     const handleTakePhoto = async () => {
@@ -47,9 +55,54 @@ const NavigateMapScreen = ({ route, navigation }) => {
         if (!result.canceled) {
             setPhotoUri(result.assets[0].uri);
             setVisitedLocations(visitedLocations + 1);
-            setIsModalVisible(true); // visar bilden efter den tagits
+            setIsModalVisible(true);
         }
     };
+
+    const handleCompleteHunt = async () => {
+        try {
+            if (!huntId) {
+                throw new Error('Hunt ID is not defined');
+            }
+
+            const huntRef = doc(db, 'hunts', huntId);
+            await updateDoc(huntRef, {
+                status: 'completed',
+            });
+
+            const medalRef = doc(db, 'medals', huntId);
+            await setDoc(medalRef, {
+                userId: user.uid,
+                title: huntTitle,
+                imageUri: photoUri,
+                completedAt: new Date(),
+            });
+
+            if (onHuntComplete) {
+                onHuntComplete(); 
+            }
+
+            navigation.navigate('Profile', { huntId });
+        } catch (error) {
+            console.error('Error completing hunt:', error);
+            Alert.alert("Error", "An error occurred while completing the hunt. Please try again.");
+        }
+    };
+
+    useEffect(() => {
+        if (visitedLocations === huntLocations.length) {
+            Alert.alert(
+                "Hunt Complete!",
+                "Congratulations! You've completed the hunt.",
+                [
+                    {
+                        text: "OK",
+                        onPress: () => handleCompleteHunt(),
+                    },
+                ]
+            );
+        }
+    }, [visitedLocations]);
 
     const remainingLocations = huntLocations.length - visitedLocations;
 
@@ -71,7 +124,6 @@ const NavigateMapScreen = ({ route, navigation }) => {
                         <Ionicons name="camera" size={40} color="white" />
                     </Pressable>
 
-                    {/* förhandsvisning av bilden */}
                     <Modal
                         transparent={true}
                         visible={isModalVisible}
@@ -102,4 +154,3 @@ const NavigateMapScreen = ({ route, navigation }) => {
 };
 
 export default NavigateMapScreen;
-
