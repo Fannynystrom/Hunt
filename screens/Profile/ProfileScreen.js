@@ -12,7 +12,7 @@ import ActiveHunts from '../../components/ActiveHunts';
 import Medals from '../../components/Medals';
 
 const ProfileScreen = ({ navigation, route }) => {
-    const { user, username, imageUri, isLoading } = useUser();
+    const { user, username, imageUri, isLoading, uploadImageToStorage } = useUser();
     const [localImageUri, setLocalImageUri] = useState(imageUri);
     const [medals, setMedals] = useState([]);
     const huntId = route.params?.huntId;
@@ -62,25 +62,22 @@ const ProfileScreen = ({ navigation, route }) => {
         }
     };
 
-    const uploadImageToStorage = async (uri) => {
-        try {
-            const response = await fetch(uri);
-            const blob = await response.blob();
-            const storageRef = ref(storage, `profilePictures/${user.uid}`);
-            await uploadBytes(storageRef, blob);
-            const downloadURL = await getDownloadURL(storageRef);
-            await saveImageUriToFirestore(downloadURL);
-        } catch (error) {
-            console.error('Error uploading image:', error);
+    const handleTakePhoto = async () => {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Sorry, we need camera permissions to make this work!');
+            return;
         }
-    };
 
-    const saveImageUriToFirestore = async (uri) => {
-        try {
-            const userRef = doc(db, 'users', user.uid);
-            await setDoc(userRef, { imageUri: uri }, { merge: true });
-        } catch (error) {
-            console.error('Error saving image URI:', error);
+        let result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const photoUri = result.assets[0].uri;
+            setLocalImageUri(photoUri);
+            await uploadImageToStorage(photoUri);
         }
     };
 
@@ -124,11 +121,34 @@ const ProfileScreen = ({ navigation, route }) => {
 
                     <View style={styles.imageContainer}>
                         {localImageUri ? (
-                            <Image source={{ uri: localImageUri }} style={styles.profileImage} />
+                            <Image source={{ uri: localImageUri || imageUri }} style={styles.profileImage} />
                         ) : (
                             <View style={styles.placeholderImage} />
                         )}
-                        <Pressable role="button" style={styles.editIcon} onPress={handleChoosePhoto}>
+                        <Pressable 
+                            role="button" 
+                            style={styles.editIcon} 
+                            onPress={() => {
+                                Alert.alert(
+                                    "Select Option",
+                                    "Choose an option to update your profile picture",
+                                    [
+                                        {
+                                            text: "Choose from Library",
+                                            onPress: handleChoosePhoto
+                                        },
+                                        {
+                                            text: "Take a Photo",
+                                            onPress: handleTakePhoto
+                                        },
+                                        {
+                                            text: "Cancel",
+                                            style: "cancel"
+                                        }
+                                    ]
+                                );
+                            }}
+                        >
                             <Text style={styles.editIconText}>✎</Text>
                         </Pressable>
                     </View>
