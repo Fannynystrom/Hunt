@@ -73,7 +73,7 @@ export const UserProvider = ({ children }) => {
         await uploadBytes(storageRef, blob);
         const downloadURL = await getDownloadURL(storageRef);
         await saveImageUriToFirestore(user.uid, downloadURL);
-        setImageUri(downloadURL); // Uppdatera lokal state
+        setImageUri(downloadURL); 
     } catch (error) {
         console.error('Error uploading image:', error);
     }
