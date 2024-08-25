@@ -4,7 +4,6 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     justifyContent: 'flex-start',
-    //alignItems: 'center',
     padding: 20,
     backgroundColor: '#fff',
   },
@@ -65,35 +64,36 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-
-  // behållaren för Planned Hunts och Active Hunts
   huntsContainer: {
     width: '100%',  
     marginTop: 20,  
   },
-
-  // rubrikerna Planned Hunts och Active Hunts
   sectionTitle: {
     fontSize: 19,
     fontWeight: 'bold',
     color: '#007BFF',
     textAlign: 'left',  
-    marginBottom: 10,  
+    marginBottom: 10,
+    marginTop: 20,  
   },
-
-  // Stil för varje "hunt" objekt
   huntItem: {
-    flexDirection: 'row',  
+    flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderColor: '#ccc',
+    marginVertical: 0,
+    paddingVertical: 0,
   },
   huntTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'left',  
+    marginBottom: 5,
+  },
+  noHuntsText: {
+    color: 'black',
   },
   userAvatar: {
     width: 40,
@@ -101,10 +101,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
   },
-  noHuntsText: {
+  noParticipantsText: {
     textAlign: 'center',
     color: '#888',
-    marginTop: 20,
+    marginTop: 5,
   },
   invitedUserProfileImage: {
     width: 40,
@@ -122,8 +122,9 @@ const styles = StyleSheet.create({
     paddingRight: 30,
     paddingLeft: 30,
     borderRadius: 5,
-    marginTop: 60,
-    marginLeft: 20,
+    marginTop: 30,
+    marginLeft: 0,
+    marginbottom: 40,
     alignSelf: 'flex-start',
   },
   createHuntButtonText: {
@@ -131,18 +132,37 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  medalsContainer: {
-    marginTop: 20,
+
+
+  medalItem: {
+    flexDirection: 'column',
+    margin: 5, 
     alignItems: 'center',
-    padding: 10,
-    backgroundColor: '#F8F8F8',
-    width: '100%',
-    marginTop: 60,
+    width: 100, 
   },
-  medalsTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#007BFF',
+  medalImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginBottom: 5,
+  },
+  medalTitle: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  medalColumnWrapper: {
+    justifyContent: 'space-between', 
+    paddingHorizontal: 10,
+  },
+  noMedalsText: {
+    textAlign: 'center',
+    marginTop: 20,
+    color: '#888',
+  },
+  participantName: {
+    fontSize: 14,
+    color: '#333',
+    marginLeft: 10,
   },
 });
 

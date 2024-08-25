@@ -3,8 +3,7 @@ import { View, Text, Image, Pressable, SectionList, Alert } from 'react-native';
 import { useUser } from '../../context/UserContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { auth, storage, db } from '../../firebaseConfig';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { collection, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import styles from '../Profile/ProfileScreenStyles';
 import * as ImagePicker from 'expo-image-picker';
 import PlannedHunts from '../../components/PlannedHunts';
@@ -15,13 +14,12 @@ const ProfileScreen = ({ navigation, route }) => {
     const { user, username, imageUri, isLoading, uploadImageToStorage } = useUser();
     const [localImageUri, setLocalImageUri] = useState(imageUri);
     const [medals, setMedals] = useState([]);
-    const huntId = route.params?.huntId;
 
-    const [refresh, setRefresh] = useState(false);
-
-    const handleUpdate = () => {
-        navigation.replace('Profile', { refresh: !refresh });
-    };
+    useEffect(() => {
+        if (imageUri) {
+            setLocalImageUri(imageUri);
+        }
+    }, [imageUri]);
 
     const fetchMedals = useCallback(async () => {
         if (user) {
@@ -121,7 +119,7 @@ const ProfileScreen = ({ navigation, route }) => {
 
                     <View style={styles.imageContainer}>
                         {localImageUri ? (
-                            <Image source={{ uri: localImageUri || imageUri }} style={styles.profileImage} />
+                            <Image source={{ uri: localImageUri }} style={styles.profileImage} />
                         ) : (
                             <View style={styles.placeholderImage} />
                         )}
@@ -159,13 +157,8 @@ const ProfileScreen = ({ navigation, route }) => {
         },
         { title: 'Planned Hunts', data: [{}], renderItem: () => <PlannedHunts /> },
         { title: 'Active Hunts', data: [{}], renderItem: () => <ActiveHunts navigation={navigation} /> },
-        { 
-            title: 'Medals', 
-            data: [{}], 
-            renderItem: () => <Medals medals={medals} />
-        },
         {
-            title: '',
+            title: '', 
             data: [{}],
             renderItem: () => (
                 <>
@@ -175,8 +168,13 @@ const ProfileScreen = ({ navigation, route }) => {
                 </>
             ),
         },
+        { 
+            title: 'Medals', 
+            data: [{}], 
+            renderItem: () => <Medals medals={medals} />
+        },
     ];
-
+    
     return (
         <SectionList
             sections={sections}

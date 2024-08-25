@@ -94,4 +94,3 @@ const PlannedHunts = () => {
 };
 
 export default PlannedHunts;
-

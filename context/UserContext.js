@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth, db, storage } from '../firebaseConfig';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
+import { Image } from 'react-native';
+import DefaultProfileImage from '../assets/ingenProfilbild.png'; 
 
 const UserContext = createContext();
 
@@ -11,7 +13,8 @@ export const UserProvider = ({ children }) => {
   const [imageUri, setImageUri] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const defaultProfileImageUri = 'url_to_default_image';
+  // hämtar standardbild
+  const defaultProfileImageUri = Image.resolveAssetSource(DefaultProfileImage).uri;
 
   useEffect(() => {
     const fetchUserProfile = async (uid) => {
@@ -32,8 +35,7 @@ export const UserProvider = ({ children }) => {
                         await saveImageUriToFirestore(uid, url);
                     } catch (error) {
                         if (error.code === 'storage/object-not-found') {
-                            console.warn('Profile picture not found, using default image instead');
-                            setImageUri(defaultProfileImageUri);
+                            setImageUri(defaultProfileImageUri); 
                         } else {
                             throw error;
                         }
@@ -41,11 +43,11 @@ export const UserProvider = ({ children }) => {
                 }
             } else {
                 console.log('No such document!');
-                setImageUri(defaultProfileImageUri); 
+                setImageUri(defaultProfileImageUri); //standard om ingen bild finns
             }
         } catch (error) {
             console.error('Error fetching user profile:', error);
-            setImageUri(defaultProfileImageUri); 
+            setImageUri(defaultProfileImageUri); // standard bild vid fel
         }
     };
 
@@ -56,7 +58,7 @@ export const UserProvider = ({ children }) => {
         } else {
             setUser(null);
             setUsername(null);
-            setImageUri(defaultProfileImageUri);
+            setImageUri(defaultProfileImageUri); 
         }
         setIsLoading(false);
     });

@@ -46,6 +46,8 @@ const Medals = () => {
       renderItem={renderMedal}
       keyExtractor={(item) => item.id}
       ListEmptyComponent={<Text style={styles.noMedalsText}>You have no medals yet.</Text>}
+      numColumns={3}  // Kolumner per rad
+      columnWrapperStyle={styles.medalColumnWrapper} 
     />
   );
 };
